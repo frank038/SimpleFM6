@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.2.3
+# version 1.2.4
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -741,8 +741,16 @@ class propertyDialog(QDialog):
             if not shutil.which("pkexec"):
                 self.CAN_CHANGE_OWNER = 0
         #
-        storageInfo = QStorageInfo(self.itemPath)
-        storageInfoIsReadOnly = storageInfo.isReadOnly()
+        storageInfoIsReadOnly = 1
+        if stat.S_ISREG(os.stat(self.itemPath).st_mode) or stat.S_ISDIR(os.stat(self.itemPath).st_mode) or stat.S_ISLNK(os.stat(self.itemPath).st_mode):
+            try:
+                storageInfo = QStorageInfo(self.itemPath)
+                storageInfoIsReadOnly = storageInfo.isReadOnly()
+            except:
+                pass
+        else:
+            if os.access(os.path.dirname(self.itemPath), os.W_OK):
+                storageInfoIsReadOnly = 0
         #
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
         self.setWindowTitle("Property")
