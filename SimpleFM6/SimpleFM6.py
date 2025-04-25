@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.2.4
+# version 1.2.5
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -23,8 +23,7 @@ import threading
 from xdg.BaseDirectory import *
 from xdg.DesktopEntry import *
 from cfg import *
-# if enable_dbus_open == 1:
-    # from pydbus import SessionBus
+
 
 ############## user directory names
 USER_DIRS = os.path.join(os.path.expanduser("~"), ".config", "user-dirs.dirs")
@@ -742,12 +741,16 @@ class propertyDialog(QDialog):
                 self.CAN_CHANGE_OWNER = 0
         #
         storageInfoIsReadOnly = 1
-        if stat.S_ISREG(os.stat(self.itemPath).st_mode) or stat.S_ISDIR(os.stat(self.itemPath).st_mode) or stat.S_ISLNK(os.stat(self.itemPath).st_mode):
-            try:
-                storageInfo = QStorageInfo(self.itemPath)
-                storageInfoIsReadOnly = storageInfo.isReadOnly()
-            except:
-                pass
+        if os.path.exists(os.path.realpath(self.itemPath)):
+            if stat.S_ISREG(os.stat(self.itemPath).st_mode) or stat.S_ISDIR(os.stat(self.itemPath).st_mode) or stat.S_ISLNK(os.stat(self.itemPath).st_mode):
+                try:
+                    storageInfo = QStorageInfo(self.itemPath)
+                    storageInfoIsReadOnly = storageInfo.isReadOnly()
+                except:
+                    pass
+            else:
+                if os.access(os.path.dirname(self.itemPath), os.W_OK):
+                    storageInfoIsReadOnly = 0
         else:
             if os.access(os.path.dirname(self.itemPath), os.W_OK):
                 storageInfoIsReadOnly = 0
@@ -3222,7 +3225,7 @@ class itemDelegate(QItemDelegate):
         st.setTextOption(to)
         ww = st.size().width()
         hh = st.size().height()
-        return QSize(int(ww), int(hh)+int(hh1)+ITEM_HEIGHT)
+        return QSize(int(ww), int(hh)+int(hh1)+ITEM_HEIGHT+ITEM_HEIGHT_GAP)
 
 
 # used for main
@@ -3348,44 +3351,6 @@ class IconProvider(QFileIconProvider):
         return super(IconProvider, self).icon(fileInfo)
 
 ########################### MAIN WINDOW ############################
-# # from ranger
-# terminal_cmd = [""]
-# class SimplefmService(object):
-    # """
-        # <node>
-            # <interface name='org.freedesktop.FileManager1'>
-                # <method name='ShowFolders'>
-                    # <arg type='as' name='URIs' direction='in'/>
-                    # <arg type='s' name='StartupId' direction='in'/>
-                # </method>
-                # <method name='ShowItems'>
-                    # <arg type='as' name='URIs' direction='in'/>
-                    # <arg type='s' name='StartupId' direction='in'/>
-                # </method>
-                # <method name='ShowItemProperties'>
-                    # <arg type='as' name='URIs' direction='in'/>
-                    # <arg type='s' name='StartupId' direction='in'/>
-                # </method>
-            # </interface>
-        # </node>
-    # """
-
-    # def ShowFolders(self, uris, startup_id):
-        # uri = self.format_uri(uris[0])
-        # #subprocess.Popen([*terminal_cmd, 'ranger', uri])
-        # subprocess.Popen([*terminal_cmd, uri])
-
-    # def ShowItems(self, uris, startup_id):
-        # uri = self.format_uri(uris[0])
-        # #subprocess.Popen([*terminal_cmd, 'ranger', '--select', uri])
-        # subprocess.Popen([*terminal_cmd, uri])
-
-    # def ShowItemProperties(self, uris, startup_id):
-        # self.ShowItems(uris, startup_id)
-
-    # # def format_uri(uri: str):
-    # def format_uri(self, uri):
-        # return urllib.parse.unquote(uri).replace('file://', '')
 
 # 1
 class MainWin(QWidget):
@@ -3507,13 +3472,6 @@ class MainWin(QWidget):
             self.iface.connect_to_signal('InterfacesRemoved', self.device_removed_callback)
             #
             self.on_pop_devices()
-            #
-            # if enable_dbus_open == 1:
-                # session_bus = SessionBus()
-                # try:
-                    # session_bus.publish('org.freedesktop.FileManager1', SimplefmService())
-                # except:
-                    # pass
             #
         # close buttons
         qbtn = QPushButton(QIcon.fromTheme("window-close"), "")
@@ -4880,7 +4838,12 @@ class LView(QBoxLayout):
                     self.label6.setText("(Not readable)"+"    ")
             elif os.path.isdir(real_path):
                 if os.access(real_path, os.R_OK):
-                    self.label6.setText(str(QDir(path).count()-2))
+                    # self.label6.setText(str(QDir(path).count()-2))
+                    num_items, hidd_items = self.num_itemh(real_path)
+                    self.label2.setText("<i>Items </i>")
+                    self.label6.setText(str(num_items)+"    ")
+                    self.label3.setText("<i>Hiddens </i>")
+                    self.label7.setText(str(hidd_items))
                 else:
                     self.label6.setText("(Not readable)"+"    ")
             # link - broken link
@@ -4888,9 +4851,11 @@ class LView(QBoxLayout):
             if len(real_path) > 50:
                 real_path_short = real_path[0:23]+"..."+real_path[-24:]
             if not os.path.exists(real_path):
-                self.label8.setText("Broken link to: {}".format(real_path_short))
+                # self.label8.setText("Broken link to: {}".format(real_path_short))
+                self.label8.setText("Broken link")
             else:
-                self.label8.setText("<i>&nbsp;&nbsp;&nbsp;&nbsp;Link to</i>: {}".format(real_path_short))
+                # self.label8.setText("<i>&nbsp;&nbsp;&nbsp;&nbsp;Link to</i>: {}".format(real_path_short))
+                self.label8.setText("<i>&nbsp;&nbsp;&nbsp;&nbsp;Link type</i>")
         elif os.path.isfile(path):
             # mimetype
             imime = QMimeDatabase().mimeTypeForFile(path, QMimeDatabase.MatchMode.MatchDefault)

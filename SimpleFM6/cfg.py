@@ -33,6 +33,8 @@ ITEM_WIDTH = 90
 ITEM_WIDTH_ALT = 48
 # icon cell height
 ITEM_HEIGHT = 70
+# more or less height in the case the items need manual adjust: 0 default
+ITEM_HEIGHT_GAP = 10
 # icon cell height alternative view
 ITEM_HEIGHT_ALT = 48
 # icon size
