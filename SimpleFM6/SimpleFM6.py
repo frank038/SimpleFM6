@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.2.5
+# version 1.3
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -3376,6 +3376,7 @@ class MainWin(QWidget):
             self.showMaximized()
         #
         self.setWindowTitle("SimpleFM")
+        # self.setWindowIcon(QIcon(os.path.join(os.getcwd(), "icons", "file-manager-blue.svg")))
         #
         # main box
         self.vbox = QBoxLayout(QBoxLayout.Direction.TopToBottom)
@@ -5735,12 +5736,12 @@ class LView(QBoxLayout):
     # invert the selection
     def finvbtn(self):
         rootIndex = self.listview.rootIndex()
-        first = rootIndex.child(0, 0)
         numOfItems = self.fileModel.rowCount(rootIndex)
-        last = rootIndex.child(numOfItems - 1, 0)
+        first = self.fileModel.index(0,0,rootIndex)
+        last = self.fileModel.index(numOfItems-1,0,rootIndex)
         selection = QItemSelection(first, last)
         self.listview.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.Toggle)
-
+    
     # toggle show hidden items
     def fhidbtn(self):
         # if self.fmf == 0:
