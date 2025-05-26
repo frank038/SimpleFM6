@@ -82,15 +82,17 @@ class checkSum(QDialog):
         data2 = self.le2.text()
         if data1 and data2:
             if data1 == data2:
-                editor = self.le2
-                palette = editor.palette()
-                palette.setColor(QPalette.ColorGroup.Active, QPalette.ColorRole.Text, QColor(0, 155, 0))
-                editor.setPalette(palette)
+                self.le2.setStyleSheet("background-color: #00ff00;")
+                # editor = self.le2
+                # palette = editor.palette()
+                # palette.setColor(QPalette.ColorGroup.Active, QPalette.ColorRole.Text, QColor(0, 155, 0))
+                # editor.setPalette(palette)
             else:
-                editor = self.le2
-                palette = editor.palette()
-                palette.setColor(QPalette.ColorGroup.Active, QPalette.ColorRole.Text, QColor(190, 0, 0))
-                editor.setPalette(palette)
+                elf.le2.setStyleSheet("background-color: #ff0000;")
+                # editor = self.le2
+                # palette = editor.palette()
+                # palette.setColor(QPalette.ColorGroup.Active, QPalette.ColorRole.Text, QColor(190, 0, 0))
+                # editor.setPalette(palette)
                 
 
 class ModuleCustom():

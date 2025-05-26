@@ -4,6 +4,7 @@
 archivemount program service
 find all archive mounted by archivemount
 autostart module name must be in the form: autostart_WHATEVER_NAME
+in the case of errors, just remove the file fuse_mounted in /tmp/archivemount
 """
 import os
 from PyQt6.QtWidgets import (QDialog,QBoxLayout,QLabel,QPushButton,QApplication,QMenu)
@@ -155,4 +156,4 @@ class MyDialog(QDialog):
         mbox.addWidget(button_ok)
         #
         button_ok.clicked.connect(self.close)
-        self.exec_()
+        self.exec()
