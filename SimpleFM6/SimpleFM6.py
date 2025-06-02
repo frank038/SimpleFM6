@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.3
+# version 1.4
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -2118,7 +2118,8 @@ class copyThread2(QThread):
                                     items_skipped += "{}:\n{}\n------------\n".format(newDestDir, str(E))
                                 continue
                             try:
-                                shutil.rmtree(dfile)
+                                if action == 2:
+                                    shutil.rmtree(dfile)
                             except Exception as E:
                                 not_to_skip += 1
                                 if not_to_skip < num_not_to_skip:
@@ -2928,7 +2929,7 @@ class MyQlist(QListView):
             MyDialog("Info", "The current folder is not writable: "+os.path.basename(dest_path), None)
             event.ignore()
             return
-        if event.mimeData().hasUrls:
+        if event.mimeData().hasUrls():
             event.accept()
             filePathsTemp = []
             # web address list
@@ -6174,11 +6175,15 @@ class PastenMerge():
                 # self.action: 1 copy - 2 cut - 4 make link
                 copyItems2(self.action, filePaths, -4, self.lvDir, self.window)
         # DnD - 1 copy - 2 cut - 4 link (not supported)
-        elif self.action == 1 or self.action == 2:
+        elif self.action == Qt.DropAction.CopyAction or self.action == Qt.DropAction.MoveAction:
             if self.dlist:
                 # execute the copying copy/cut operations
                 # self.action: 1 copy - 2 cut - 4 make link
-                copyItems2(self.action, self.dlist, -4, self.lvDir, self.window)
+                if self.action == Qt.DropAction.CopyAction:
+                    _action = 1
+                elif self.action == Qt.DropAction.MoveAction:
+                    _action = 2
+                copyItems2(_action, self.dlist, -4, self.lvDir, self.window)
 
 
 ###################### THE HOME TRASHCAN #######################
