@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.4
+# version 1.5
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -3001,37 +3001,49 @@ class MyQlist(QListView):
                     # move the items if the pointer folder is in the HOME directory
                     if filePaths[0][0:len(USER_HOME)] == ifp[0:len(USER_HOME)]:
                         #
-                        if not is_wayland:
-                            # pointedItem = self.tview.indexAt(position)
-                            # position = event.pos()
-                            position = event.position().toPoint()
-                            #
-                            menu = QMenu("Menu", self)
-                            #
-                            copyAction = QAction("Copy", self)
-                            copyAction.uaction = "copy"
-                            copyAction.triggered.connect(self.fdragdrop)
-                            menu.addAction(copyAction)
-                            #
-                            moveAction = QAction("Move", self)
-                            moveAction.uaction = "move"
-                            moveAction.triggered.connect(self.fdragdrop)
-                            menu.addAction(moveAction)
-                            #
-                            menu.addSeparator()
-                            #
-                            cancelAction = QAction("Cancel", self)
-                            cancelAction.uaction = "cancel"
-                            cancelAction.triggered.connect(self.fdragdrop)
-                            menu.addAction(cancelAction)
-                            #
-                            menu.exec(self.mapToGlobal(position))
-                            #
-                            if self.user_action:
-                                event_action = self.user_action
-                            else:
-                                event.ignore()
+                        # if not is_wayland:
+                        # pointedItem = self.tview.indexAt(position)
+                        # position = event.pos()
+                        position = event.position().toPoint()
+                        #
+                        menu = QMenu("Menu", self)
+                        #
+                        copyAction = QAction("Copy", self)
+                        copyAction.uaction = "copy"
+                        copyAction.triggered.connect(self.fdragdrop)
+                        menu.addAction(copyAction)
+                        #
+                        moveAction = QAction("Move", self)
+                        moveAction.uaction = "move"
+                        moveAction.triggered.connect(self.fdragdrop)
+                        menu.addAction(moveAction)
+                        #
+                        menu.addSeparator()
+                        #
+                        cancelAction = QAction("Cancel", self)
+                        cancelAction.uaction = "cancel"
+                        cancelAction.triggered.connect(self.fdragdrop)
+                        menu.addAction(cancelAction)
+                        #
+                        menu.exec(self.mapToGlobal(position))
+                        #
+                        if self.user_action:
+                            # event_action = self.user_action
+                            if self.user_action == 1:
+                                _event_action = Qt.DropAction.CopyAction
+                            elif self.user_action == 2:
+                                _event_action = Qt.DropAction.MoveAction
+                        else:
+                            event.ignore()
+                            return
+                        if os.path.isdir(ifp):
+                            if os.access(ifp, os.W_OK):
+                                PastenMerge(ifp, _event_action, filePaths, None)
                                 return
+                            else:
+                                MyDialog("Info", "The following folder in not writable: "+os.path.basename(ifp), None)
+                                return
+                    #
                     if os.path.isdir(ifp):
                         if os.access(ifp, os.W_OK):
                             PastenMerge(ifp, event_action, filePaths, None)
