@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.5
+# version 1.6
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -2015,7 +2015,8 @@ class copyThread2(QThread):
                     items_skipped += "\n{}".format(not_to_skip_msg)
                 self.sig.emit(["Cancelled", 1, 1, items_skipped])
                 return
-            time.sleep(0.01)
+            #
+            time.sleep(0.001)
             #
             # one signal for each element in the list
             self.sig.emit(["mSending", os.path.basename(dfile)])
@@ -4076,7 +4077,6 @@ class MainWin(QWidget):
         self.mtab.setCurrentIndex(self.mtab.count()-1)
         
     
-    #
     def closeTab(self, index):
         if self.mtab.count() > 1:
             if  self.mtab.tabText(index) == "Media":
@@ -4354,42 +4354,61 @@ class LView(QBoxLayout):
         #
         # history of the opened folders (of the current view)
         self.insertLayout(0, self.bhicombo)
+        #
+        # button change history/scroll
+        self.change_btn = QPushButton(QIcon("icons/alternate.svg"), "")
+        self.change_btn.setToolTip("Switch history/buttons")
+        if BUTTON_SIZE:
+            self.change_btn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+        self.change_btn.setCheckable(True)
+        self.change_btn.clicked.connect(self.on_change_btn)
+        self.bhicombo.addWidget(self.change_btn)
+        #
         self.hicombo = QComboBox()
         self.hicombo.setEditable(True)
         if BUTTON_SIZE:
             self.hicombo.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+        if FLOW_WIDGET == 1:
+            self.hicombo.hide()
         self.bhicombo.addWidget(self.hicombo, 1)
         self.hicombo.activated.connect(self.fhbmenuction)
         self.hicombo.insertItem(0, self.lvDir)
         self.hicombo.setCurrentIndex(0)
         #
         ### path button box
-        if FLOW_WIDGET:
-            self.scroll_widget = QWidget()
-            self.scroll_widget.setContentsMargins(QMargins(0,0,0,0))
-            self.scroll_layout = QHBoxLayout()
-            self.scroll_layout.setContentsMargins(QMargins(0,0,0,0))
-            self.scroll_layout.setSpacing(0)
-            self.scroll_widget.setLayout(self.scroll_layout)
-            self.scroll = QScrollArea()
-            self.scroll.installEventFilter(self)
-            self.scroll.setContentsMargins(QMargins(0,0,0,0))
-            self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-            self.scroll.setWidgetResizable(True)
-            self.scroll.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-            self.scroll.setWidget(self.scroll_widget)
-            self.box_pb = self.scroll_layout
-            self.insertWidget(1, self.scroll)
-            self.on_box_pb(self.lvDir)
-        else:
-            self.box_pb = FlowLayout()
-            self.insertLayout(1, self.box_pb)
-            self.on_box_pb(self.lvDir)
+        self.scroll_widget = QWidget()
+        self.scroll_widget.setContentsMargins(QMargins(0,0,0,0))
+        #
+        self.scroll_layout = QHBoxLayout()
+        self.scroll_layout.setContentsMargins(QMargins(0,0,0,0))
+        self.scroll_layout.setSpacing(0)
+        self.scroll_widget.setLayout(self.scroll_layout)
+        self.scroll = QScrollArea()
+        self.scroll.setFrameStyle(0)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll.installEventFilter(self)
+        self.scroll.setContentsMargins(QMargins(0,0,0,0))
+        self.scroll.setObjectName("taskscrollarea")
+        self.scroll.setStyleSheet("#taskscrollarea {border: 0px solid; padding: 0px; margin: 0px;}")
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Ignored)
+        self.scroll.setWidget(self.scroll_widget)
+        self.box_pb = self.scroll_layout
+        if FLOW_WIDGET == 0:
+            self.scroll.hide()
+        self.bhicombo.addWidget(self.scroll, 1)
+        #
+        self.on_box_pb(self.lvDir)
+        #
+        if FLOW_WIDGET == 0:
+            self.change_btn.setChecked(True)
         ####
         ####
         # self.fmf = 0
         self.selection = None
         self.listview = MyQlist()
+        self.listview.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.listview.setViewMode(QListView.ViewMode.IconMode)
         #
         # the background color
@@ -4465,6 +4484,14 @@ class LView(QBoxLayout):
         self.fileModel.rowsInserted.connect(self.rowInserted)
         self.fileModel.rowsRemoved.connect(self.rowRemoved)
         
+    def on_change_btn(self):
+        if self.sender().isChecked():
+            self.hicombo.show()
+            self.scroll.hide()
+        else:
+            self.hicombo.hide()
+            self.scroll.show()
+    
     # the root dir is changed
     def on_dir_changed(self, _path):
         if _path == self.lvDir:
@@ -4542,59 +4569,67 @@ class LView(QBoxLayout):
     
     # change the dir throu the button in the path bar
     def on_change_dir(self, path):
-        if os.path.isdir(path):
-            if os.access(path, os.R_OK):
-                try:
-                    self.listview.clearSelection()
-                    # self.lvDir = path
-                    # self.window.mtab.setTabText(self.window.mtab.currentIndex(), os.path.basename(self.lvDir))
-                    # self.window.mtab.setTabToolTip(self.window.mtab.currentIndex(), self.lvDir)
-                    self.listview.setRootIndex(self.fileModel.setRootPath(path))
-                    # self.tabLabels()
-                    # # scroll to top
-                    # self.listview.verticalScrollBar().setValue(0)
-                    # # add the path into the history
-                    # self.hicombo.insertItem(0, self.lvDir)
-                    # self.hicombo.setCurrentIndex(0)
-                    # return 1
-                    self._pp = 2
-                except Exception as E:
-                    MyDialog("Error", str(E), self.window)
-                    return 0
-            else:
-                MyDialog("Error", path+"\n\n   Not readable", self.window)
-                return 0
+        if os.access(path, os.R_OK):
+            try:
+                self.listview.clearSelection()
+                # self.lvDir = path
+                # self.window.mtab.setTabText(self.window.mtab.currentIndex(), os.path.basename(self.lvDir))
+                # self.window.mtab.setTabToolTip(self.window.mtab.currentIndex(), self.lvDir)
+                self.listview.setRootIndex(self.fileModel.setRootPath(path))
+                # self.tabLabels()
+                # # scroll to top
+                # self.listview.verticalScrollBar().setValue(0)
+                # # add the path into the history
+                # self.hicombo.insertItem(0, self.lvDir)
+                # self.hicombo.setCurrentIndex(0)
+                # return 1
+                self._pp = 2
+                return 1
+            except Exception as E:
+                MyDialog("Error", str(E), self.window)
+                return -1
+        else:
+            MyDialog("Error", path+"\n\n   Not readable", self.window)
+            return 0
     
     # see on_box_pb
     def btn_change_dir(self):
-        ppath = []
-        for i in range(self.box_pb.count()):
-            item = self.box_pb.itemAt(i)
-            if isinstance(item.widget(), QPushButton):
-                ppath.append(item.widget().text())
-                if i == self.sender().ind:
-                    break
+        # ppath = []
+        # for i in range(self.box_pb.count()):
+            # item = self.box_pb.itemAt(i)
+            # if isinstance(item.widget(), QPushButton):
+                # ppath.append(item.widget().text())
+                # if i == self.sender().ind:
+                    # break
+        # #
+        # new_path = os.path.join(*ppath)
         #
-        new_path = os.path.join(*ppath)
+        new_path = self.sender()._path
+        # #
+        # if os.path.exists(new_path):
+            # if new_path != self.lvDir:
+                # self.on_btn_change_dir(new_path)
+        # else:
+            # MyDialog("Info", "The folder \n{}\ndoes not exist.".format(new_path), self.window)
         #
-        if os.path.exists(new_path):
-            if new_path != self.lvDir:
-                self.on_btn_change_dir(new_path)
-        else:
-            MyDialog("Info", "The folder \n{}\ndoes not exist.".format(new_path), self.window)
-            
+        if new_path != self.lvDir:
+            self.on_btn_change_dir(new_path)
         
     # see btn_change_dir
     def on_btn_change_dir(self, new_path):
-        if new_path != self.lvDir:
+        if os.path.exists(new_path) and os.path.isdir(new_path):
+            # 1 success 0 not readable -1 error
             ret = self.on_change_dir(new_path)
             # if not change directory the previous button will be rechecked
             # VERIFY
-            if ret == 0:
+            if ret == 1:
+                self.sender().setChecked(True)
+                self.box_pb_btn = self.sender()
+            else:
                 self.box_pb_btn.setChecked(True)
-                return
-            # elif ret == 1:
-            self.box_pb_btn = self.sender()
+        else:
+            self.box_pb_btn.setChecked(True)
+            MyDialog("Info", "The folder \n{}\ndoes not exist.".format(new_path), self.window)
     
     # populate the path buttons box
     def on_box_pb(self, ddir):
@@ -4614,16 +4649,21 @@ class LView(QBoxLayout):
         ppath_len = len(ppath)
         for p in range(0, ppath_len):
             if p == 0:
-                pb = QPushButton(QIcon("icons/drive-harddisk.svg"), "/")
+                # pb = QPushButton(QIcon("icons/drive-harddisk.svg"), "/")
+                pb = QPushButton(QIcon("icons/drive-harddisk.svg"), "")
                 # set the index as button attribute
                 pb.ind = 0
+                pb._path = "/"
             else:
                 pb = QPushButton(ppath[p])
                 pb.ind = p
+                pb._path = "/".join( ppath[0:p+1] )
             pb.setAutoExclusive(True)
             pb.setCheckable(True)
             pb.clicked.connect(self.btn_change_dir)
-            pb.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+            if BUTTON_SIZE:
+                pb.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+            pb.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
             self.box_pb.addWidget(pb)
             pb.installEventFilter(self)
             pb.setObjectName('pbwidget')
@@ -4791,7 +4831,7 @@ class LView(QBoxLayout):
         upbtn.setIcon(QIcon(QPixmap("icons/go-up.svg")))
         if BUTTON_SIZE:
             upbtn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
-        upbtn.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        # upbtn.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         upbtn.setToolTip("go up")
         upbtn.clicked.connect(self.upButton)
         self.bhicombo.addWidget(upbtn)
@@ -4800,7 +4840,7 @@ class LView(QBoxLayout):
         if BUTTON_SIZE:
             invbtn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
         invbtn.setIcon(QIcon(QPixmap("icons/invert.svg")))
-        invbtn.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        # invbtn.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         invbtn.clicked.connect(self.finvbtn)
         invbtn.setToolTip("Invert the selection")
         self.bhicombo.addWidget(invbtn)
@@ -4810,7 +4850,7 @@ class LView(QBoxLayout):
         if BUTTON_SIZE:
             self.hidbtn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
         self.hidbtn.setIcon(QIcon(QPixmap("icons/hidden.svg")))
-        self.hidbtn.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        # self.hidbtn.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         self.hidbtn.clicked.connect(self.fhidbtn)
         self.hidbtn.setToolTip("Show the hidden Items")
         self.bhicombo.addWidget(self.hidbtn)

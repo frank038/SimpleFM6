@@ -78,8 +78,8 @@ MEDIA_SKIP=[]
 USE_DATE = 1
 # use background colour in the listview widgets: 0 no - 1 yes
 USE_BACKGROUND_COLOUR = 0
-# list of opened folders - widget type: 0 flow widget - 1 scroll widget
-FLOW_WIDGET = 0
+# 1 show the button bar - 0 show the history of the opened folders
+FLOW_WIDGET = 1
 # listview background color: red, green, blue
 ORED = 235
 OGREEN = 235
