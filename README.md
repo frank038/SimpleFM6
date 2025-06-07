@@ -48,4 +48,4 @@ Some custom modules are disabled: just remove "-t" from its file name to be enab
 
 The default operation while dragging one or more items is copy; press shift for the move action.
 
-![My image](https://github.com/frank038/SimpleFM6/blob/main/screenshot2.png)
+![My image](https://github.com/frank038/SimpleFM6/blob/main/screenshot2.jpg)
