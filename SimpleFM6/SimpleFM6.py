@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.6
+# version 1.6.1
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -4685,12 +4685,12 @@ class LView(QBoxLayout):
     
     #
     def eventFilter(self, obj, event):
-        if FLOW_WIDGET:
-            if event.type() == QEvent.Type.Wheel and obj is self.scroll:
-                ddelta = event.angleDelta()
-                hbar = self.scroll.horizontalScrollBar()
-                hbar.setValue(hbar.value()-ddelta.y())
-                return True
+        # if FLOW_WIDGET:
+        if event.type() == QEvent.Type.Wheel and obj is self.scroll:
+            ddelta = event.angleDelta()
+            hbar = self.scroll.horizontalScrollBar()
+            hbar.setValue(hbar.value()-ddelta.y())
+            return True
         # # the shift key is been pressed
         # modifiers = QApplication.keyboardModifiers()
         # if (modifiers & Qt.KeyboardModifier.ShiftModifier):
@@ -4720,10 +4720,11 @@ class LView(QBoxLayout):
             elif event.button() == Qt.MouseButton.MiddleButton:
                 # button box
                 if obj.objectName() == 'pbwidget':
-                    new_path_temp = []
-                    for i in range(self.box_pb.indexOf(obj)+1):
-                        new_path_temp.append(self.box_pb.itemAt(i).widget().text())
-                    new_path = os.path.join(*new_path_temp)
+                    # new_path_temp = []
+                    # for i in range(self.box_pb.indexOf(obj)+1):
+                        # new_path_temp.append(self.box_pb.itemAt(i).widget().text())
+                    # new_path = os.path.join(*new_path_temp)
+                    new_path = obj._path
                     if os.path.exists(new_path):
                         # # open the folder in the same view
                         # self.on_btn_change_dir(new_path)
