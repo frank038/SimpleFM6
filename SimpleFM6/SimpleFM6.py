@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.6.1
+# version 1.6.2
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -4364,6 +4364,20 @@ class LView(QBoxLayout):
         self.change_btn.clicked.connect(self.on_change_btn)
         self.bhicombo.addWidget(self.change_btn)
         #
+        _step = 30
+        self.buttonbar_left_btn = QPushButton(QIcon("icons/go-previous-symbolic.svg"), "")
+        self.buttonbar_left_btn.setToolTip("Scroll to left")
+        self.buttonbar_left_btn.clicked.connect(lambda:self.on_buttonbar_action(-1*_step))
+        self.bhicombo.addWidget(self.buttonbar_left_btn)
+        #
+        self.buttonbar_right_btn = QPushButton(QIcon("icons/go-next-symbolic.svg"), "")
+        self.buttonbar_right_btn.setToolTip("Scroll to right")
+        self.buttonbar_right_btn.clicked.connect(lambda:self.on_buttonbar_action(_step))
+        self.bhicombo.addWidget(self.buttonbar_right_btn)
+        if BUTTON_SIZE:
+            self.buttonbar_left_btn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+            self.buttonbar_right_btn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+        #
         self.hicombo = QComboBox()
         self.hicombo.setEditable(True)
         if BUTTON_SIZE:
@@ -4395,8 +4409,11 @@ class LView(QBoxLayout):
         self.scroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Ignored)
         self.scroll.setWidget(self.scroll_widget)
         self.box_pb = self.scroll_layout
+        #
         if FLOW_WIDGET == 0:
             self.scroll.hide()
+            self.buttonbar_left_btn.hide()
+            self.buttonbar_right_btn.hide()
         self.bhicombo.addWidget(self.scroll, 1)
         #
         self.on_box_pb(self.lvDir)
@@ -4483,6 +4500,9 @@ class LView(QBoxLayout):
         # a file has been added - hidden items are still skipped
         self.fileModel.rowsInserted.connect(self.rowInserted)
         self.fileModel.rowsRemoved.connect(self.rowRemoved)
+        
+    def on_buttonbar_action(self, _value):
+        self.scroll.horizontalScrollBar().setValue( self.scroll.horizontalScrollBar().value()+_value )
         
     def on_change_btn(self):
         if self.sender().isChecked():
@@ -4738,42 +4758,43 @@ class LView(QBoxLayout):
                         MyDialog("Info", "The folder \n{}\ndoes not exist.".format(new_path), self.window)
                     #
                     return QObject.event(obj, event)
-                # folders
-                # itemSelected = self.listview.indexAt(event.pos()).data()
-                itemSelected = self.listview.indexAt(event.position().toPoint()).data()
-                if itemSelected:
-                    itemSelectedPath = os.path.join(self.lvDir, itemSelected)
-                    if os.path.isdir(itemSelectedPath):
-                        if os.access(itemSelectedPath, os.R_OK):
-                            if IN_SAME == 1:
-                                try:
-                                    # open the selected folder in a new tab
-                                    self.fnewtabAction(itemSelectedPath, 1)
-                                except Exception as E:
-                                    MyDialog("Error", str(E), self.window)
-                            else:
-                                # open the selected folder in the same tab
-                                try:
-                                    self.listview.clearSelection()
-                                    # self.lvDir = itemSelectedPath
-                                    _lvDir = itemSelectedPath
-                                    # self.window.mtab.setTabText(self.window.mtab.currentIndex(), os.path.basename(self.lvDir))
-                                    # self.window.mtab.setTabToolTip(self.window.mtab.currentIndex(), self.lvDir)
-                                    # self.listview.setRootIndex(self.fileModel.setRootPath(self.lvDir))
-                                    self.listview.setRootIndex(self.fileModel.setRootPath(_lvDir))
-                                    # self.tabLabels()
-                                    # # scroll to top
-                                    # self.listview.verticalScrollBar().setValue(0)
-                                    # # add the path into the history
-                                    # self.hicombo.insertItem(0, self.lvDir)
-                                    # self.hicombo.setCurrentIndex(0)
-                                    # #
-                                    # self.on_box_pb(self.lvDir)
-                                    self._pp = 1
-                                except Exception as E:
-                                    MyDialog("Error", str(E), self.window)
-                        else:
-                            MyDialog("Info", itemSelected+"\nNot readable", self.window)
+                # else:
+                    # # folders
+                    # # itemSelected = self.listview.indexAt(event.pos()).data()
+                    # itemSelected = self.listview.indexAt(event.position().toPoint()).data()
+                    # if itemSelected:
+                        # itemSelectedPath = os.path.join(self.lvDir, itemSelected)
+                        # if os.path.isdir(itemSelectedPath):
+                            # if os.access(itemSelectedPath, os.R_OK):
+                                # if IN_SAME == 1:
+                                    # try:
+                                        # # open the selected folder in a new tab
+                                        # self.fnewtabAction(itemSelectedPath, 1)
+                                    # except Exception as E:
+                                        # MyDialog("Error", str(E), self.window)
+                                # else:
+                                    # # open the selected folder in the same tab
+                                    # try:
+                                        # self.listview.clearSelection()
+                                        # # self.lvDir = itemSelectedPath
+                                        # _lvDir = itemSelectedPath
+                                        # # self.window.mtab.setTabText(self.window.mtab.currentIndex(), os.path.basename(self.lvDir))
+                                        # # self.window.mtab.setTabToolTip(self.window.mtab.currentIndex(), self.lvDir)
+                                        # # self.listview.setRootIndex(self.fileModel.setRootPath(self.lvDir))
+                                        # self.listview.setRootIndex(self.fileModel.setRootPath(_lvDir))
+                                        # # self.tabLabels()
+                                        # # # scroll to top
+                                        # # self.listview.verticalScrollBar().setValue(0)
+                                        # # # add the path into the history
+                                        # # self.hicombo.insertItem(0, self.lvDir)
+                                        # # self.hicombo.setCurrentIndex(0)
+                                        # # #
+                                        # # self.on_box_pb(self.lvDir)
+                                        # self._pp = 1
+                                    # except Exception as E:
+                                        # MyDialog("Error", str(E), self.window)
+                            # else:
+                                # MyDialog("Info", itemSelected+"\nNot readable", self.window)
         #
         return QObject.event(obj, event)
 
