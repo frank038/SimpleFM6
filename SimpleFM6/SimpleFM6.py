@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.6.2
+# version 1.6.3
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -4691,7 +4691,7 @@ class LView(QBoxLayout):
             if p == (ppath_len -1):
                 pb.setChecked(True)
                 self.box_pb_btn = pb
-    
+            
     #
     def fhbmenuction(self, idx):
         path = self.hicombo.itemText(idx)
@@ -5598,7 +5598,7 @@ class LView(QBoxLayout):
         items_skipped = ""
         #
         for item in listItems:
-            time.sleep(0.1)
+            # time.sleep(0.001)
             if os.path.islink(item):
                 try:
                     os.remove(item)
