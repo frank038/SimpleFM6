@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.6.3
+# version 1.6.4
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -4508,9 +4508,13 @@ class LView(QBoxLayout):
         if self.sender().isChecked():
             self.hicombo.show()
             self.scroll.hide()
+            self.buttonbar_left_btn.hide()
+            self.buttonbar_right_btn.hide()
         else:
             self.hicombo.hide()
             self.scroll.show()
+            self.buttonbar_left_btn.show()
+            self.buttonbar_right_btn.show()
     
     # the root dir is changed
     def on_dir_changed(self, _path):
