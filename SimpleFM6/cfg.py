@@ -62,7 +62,7 @@ TICK_COLOR="white"
 # menu highlight colour: use "" to use the default style - blu #5AA7F8
 MENU_H_COLOR=""
 # service buttons size: 0 to disable
-BUTTON_SIZE=20
+BUTTON_SIZE=16
 # show delete context menu entry that bypass the trashcan: 0 no - 1 yes
 USE_DELETE = 1
 # load the trash module: 0 no - 1 yes

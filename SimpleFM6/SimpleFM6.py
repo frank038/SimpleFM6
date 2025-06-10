@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.6.4
+# version 1.6.5
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -3389,8 +3389,8 @@ class MainWin(QWidget):
         if WINM == "True":
             self.showMaximized()
         #
-        self.setWindowTitle("SimpleFM")
-        # self.setWindowIcon(QIcon(os.path.join(os.getcwd(), "icons", "file-manager-blue.svg")))
+        self.setWindowTitle("SimpleFM6")
+        self.setWindowIcon(QIcon(os.path.join(os.getcwd(), "icons", "file-manager-blue.svg")))
         #
         # main box
         self.vbox = QBoxLayout(QBoxLayout.Direction.TopToBottom)
@@ -4376,7 +4376,9 @@ class LView(QBoxLayout):
         self.bhicombo.addWidget(self.buttonbar_right_btn)
         if BUTTON_SIZE:
             self.buttonbar_left_btn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+            self.buttonbar_left_btn.setMaximumWidth(self.buttonbar_left_btn.iconSize().width())
             self.buttonbar_right_btn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+            self.buttonbar_right_btn.setMaximumWidth(self.buttonbar_right_btn.iconSize().width())
         #
         self.hicombo = QComboBox()
         self.hicombo.setEditable(True)
@@ -4502,7 +4504,13 @@ class LView(QBoxLayout):
         self.fileModel.rowsRemoved.connect(self.rowRemoved)
         
     def on_buttonbar_action(self, _value):
-        self.scroll.horizontalScrollBar().setValue( self.scroll.horizontalScrollBar().value()+_value )
+        # self.scroll.horizontalScrollBar().setValue( self.scroll.horizontalScrollBar().value()+_value )
+        if _value > 0:
+            _max = self.scroll.horizontalScrollBar().maximum()
+            self.scroll.horizontalScrollBar().setValue( self.scroll.horizontalScrollBar().value()+_max )
+        elif _value < 0:
+            _min = self.scroll.horizontalScrollBar().minimum()
+            self.scroll.horizontalScrollBar().setValue( _min )
         
     def on_change_btn(self):
         if self.sender().isChecked():
@@ -4678,15 +4686,19 @@ class LView(QBoxLayout):
                 # set the index as button attribute
                 pb.ind = 0
                 pb._path = "/"
+                if BUTTON_SIZE:
+                    pb.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+                pb.setMaximumWidth(pb.iconSize().width()+4)
+                pb.setToolTip("Root")
             else:
                 pb = QPushButton(ppath[p])
                 pb.ind = p
                 pb._path = "/".join( ppath[0:p+1] )
+                if BUTTON_SIZE:
+                    pb.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
             pb.setAutoExclusive(True)
             pb.setCheckable(True)
             pb.clicked.connect(self.btn_change_dir)
-            if BUTTON_SIZE:
-                pb.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
             pb.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
             self.box_pb.addWidget(pb)
             pb.installEventFilter(self)
@@ -4695,7 +4707,7 @@ class LView(QBoxLayout):
             if p == (ppath_len -1):
                 pb.setChecked(True)
                 self.box_pb_btn = pb
-            
+        
     #
     def fhbmenuction(self, idx):
         path = self.hicombo.itemText(idx)
