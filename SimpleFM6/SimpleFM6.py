@@ -4707,6 +4707,9 @@ class LView(QBoxLayout):
             if p == (ppath_len -1):
                 pb.setChecked(True)
                 self.box_pb_btn = pb
+        #
+        _max = self.scroll.horizontalScrollBar().maximum()
+        self.scroll.horizontalScrollBar().setValue( self.scroll.horizontalScrollBar().value()+_max )
         
     #
     def fhbmenuction(self, idx):
