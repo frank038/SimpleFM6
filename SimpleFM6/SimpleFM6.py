@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.6.5
+# version 1.6.6
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -3403,15 +3403,15 @@ class MainWin(QWidget):
         #### buttons
         # home button
         hbtn = QPushButton(QIcon.fromTheme("user-home"), None)
-        if BUTTON_SIZE:
-            hbtn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+        if TOOLBAR_BUTTON_SIZE:
+            hbtn.setIconSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE))
         hbtn.setToolTip("Home")
         hbtn.clicked.connect(lambda:self.openDir(HOME, 1))
         self.obox1.addWidget(hbtn, 0, Qt.AlignmentFlag.AlignLeft)
         # root button
         rootbtn = QPushButton(QIcon.fromTheme("computer"), None)
-        if BUTTON_SIZE:
-            rootbtn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+        if TOOLBAR_BUTTON_SIZE:
+            rootbtn.setIconSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE))
         rootbtn.setToolTip("Computer")
         rootbtn.clicked.connect(lambda:self.openDir("/", 1))
         self.obox1.addWidget(rootbtn, 0, Qt.AlignmentFlag.AlignLeft)
@@ -3430,8 +3430,8 @@ class MainWin(QWidget):
                     USE_TRASH = 0
         if USE_TRASH:
             self.tbtn = QPushButton(QIcon.fromTheme("user-trash"), None)
-            if BUTTON_SIZE:
-                self.tbtn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+            if TOOLBAR_BUTTON_SIZE:
+                self.tbtn.setIconSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE))
             self.tbtn.setToolTip("Recycle Bin")
             self.obox1.addWidget(self.tbtn, 0, Qt.AlignmentFlag.AlignLeft)
             if not isXDGDATAHOME:
@@ -3450,16 +3450,16 @@ class MainWin(QWidget):
         # show treeview of the current folder
         if ALTERNATE_VIEW:
             altBtn = QPushButton(QIcon("icons/alternate.svg"), "")
-            if BUTTON_SIZE:
-                altBtn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+            if TOOLBAR_BUTTON_SIZE:
+                altBtn.setIconSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE))
             altBtn.setToolTip("Alternate view")
             altBtn.clicked.connect(self.faltview)
             self.obox1.addWidget(altBtn, 0, Qt.AlignmentFlag.AlignLeft)
         #
         ### the bookmark menu
         self.bookmarkBtn = QPushButton(QIcon("icons/bookmarks.svg"), "")
-        if BUTTON_SIZE:
-            self.bookmarkBtn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+        if TOOLBAR_BUTTON_SIZE:
+            self.bookmarkBtn.setIconSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE))
         self.obox1.addWidget(self.bookmarkBtn)
         self.bookmarkBtnMenu = QMenu()
         self.bookmarkBtnMenu.setToolTipsVisible(True)
@@ -3689,8 +3689,8 @@ class MainWin(QWidget):
                 dicon = self.getDevice(media_type, drive_type, conn_bus)
                 #
                 media_btn = QPushButton(QIcon(dicon),"")
-                if BUTTON_SIZE:
-                    media_btn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+                if TOOLBAR_BUTTON_SIZE:
+                    media_btn.setIconSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE))
                 self.disk_box.addWidget(media_btn)
                 media_btn.setToolTip(disk_name)
                 media_btn_menu = QMenu()
