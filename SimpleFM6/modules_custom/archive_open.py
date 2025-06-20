@@ -12,7 +12,7 @@ from PyQt6.QtGui import (QIcon,QFont)
 from PyQt6.QtCore import (Qt,QFileInfo,QMimeDatabase,QSize)
 import shutil
 import subprocess
-from cfg import BUTTON_SIZE
+from cfg import TOOLBAR_BUTTON_SIZE
 
 #  module_type: this appears in the menu
 def mmodule_name():
@@ -90,8 +90,8 @@ class ModuleCustom():
                     # add a button
                     self.win = mainLView.window
                     self.media_btn = QPushButton(QIcon("icons/fuse-archive.png"),"")
-                    if BUTTON_SIZE:
-                        self.media_btn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+                    if TOOLBAR_BUTTON_SIZE:
+                        self.media_btn.setIconSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE))
                     self.win.disk_box.addWidget(self.media_btn)
                     # if mount_name == file_name:
                         # self.media_btn.setToolTip(file_name)

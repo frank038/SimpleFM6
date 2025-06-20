@@ -10,7 +10,7 @@ import os
 from PyQt6.QtWidgets import (QDialog,QBoxLayout,QLabel,QPushButton,QApplication,QMenu)
 from PyQt6.QtGui import (QIcon)
 from PyQt6.QtCore import (Qt,QSize)
-from cfg import BUTTON_SIZE
+from cfg import TOOLBAR_BUTTON_SIZE
 
 #  module_name: useless
 def mmodule_name():
@@ -57,8 +57,8 @@ class ModuleCustom():
                 #
                 if os.path.exists(dest_dir):
                     self.media_btn = QPushButton(QIcon("icons/fuse-archive.png"),None)
-                    if BUTTON_SIZE:
-                        self.media_btn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
+                    if TOOLBAR_BUTTON_SIZE:
+                        self.media_btn.setIconSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE))
                     # 
                     # if mount_name == file_name:
                         # self.media_btn.setToolTip(file_name)
