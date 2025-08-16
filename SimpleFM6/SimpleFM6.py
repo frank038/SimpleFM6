@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.6.6
+# version 1.6.7
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -3372,6 +3372,7 @@ class MainWin(QWidget):
     def __init__(self, parent=None):
         super(MainWin, self).__init__(parent)
         #
+        self._lvFile = None
         self.setWindowIcon(QIcon("icons/file-manager-blue.svg"))
         #
         if FOLDER_TO_OPEN == "HOME":
@@ -3515,7 +3516,7 @@ class MainWin(QWidget):
                         MyDialog("Error", str(E), self)
         ####
         parg = ""
-        self._lvFile = None
+        # self._lvFile = None
         # self._scroll_listview = None
         # self._scroll_idx = None
         if len(sys.argv) > 1:
