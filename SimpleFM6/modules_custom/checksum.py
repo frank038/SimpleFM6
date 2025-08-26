@@ -88,7 +88,7 @@ class checkSum(QDialog):
                 # palette.setColor(QPalette.ColorGroup.Active, QPalette.ColorRole.Text, QColor(0, 155, 0))
                 # editor.setPalette(palette)
             else:
-                elf.le2.setStyleSheet("background-color: #ff0000;")
+                self.le2.setStyleSheet("background-color: #ff0000;")
                 # editor = self.le2
                 # palette = editor.palette()
                 # palette.setColor(QPalette.ColorGroup.Active, QPalette.ColorRole.Text, QColor(190, 0, 0))
