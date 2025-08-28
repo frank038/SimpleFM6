@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.6.7
+# version 1.6.8
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -3698,6 +3698,10 @@ class MainWin(QWidget):
                 media_btn_menu.block_device = k
                 media_btn_menu.device = str(pdevice_dec)
                 media_btn_menu.drive = drive
+                if is_optical:
+                    media_btn_menu.isoptical = 1
+                else:
+                    media_btn_menu.isoptical = 0
                 media_btn.setMenu(media_btn_menu)
                 media_btn_menu.aboutToShow.connect(self.btn_menu_open)
 
@@ -3713,6 +3717,7 @@ class MainWin(QWidget):
         # get the device mount point
         ddevice = self.sender().device
         ddrive = self.sender().drive
+        is_optical = self.sender().isoptical
         block_device = self.sender().block_device
         ret_mountpoint = self.get_device_mountpoint(ddevice)
         # if ret_mountpoint == "/" or ret_mountpoint[0:5] == "/boot" or ret_mountpoint[0:5] == "/home":
@@ -3727,7 +3732,7 @@ class MainWin(QWidget):
         # the device is ejectable
         ret_eject = self.get_device_can_eject(ddrive)
         if ret_eject:
-            baction = self.sender().addAction("Eject", lambda:self.eject_media(ddrive, ret_mountpoint, ddevice))
+            baction = self.sender().addAction("Eject", lambda:self.eject_media(ddrive, ret_mountpoint, ddevice, is_optical))
         # property
         baction = self.sender().addAction("Property", lambda:self.media_property(block_device, ret_mountpoint, ddrive, ddevice))
     
@@ -3795,7 +3800,7 @@ class MainWin(QWidget):
             return -1
     
     # eject the media
-    def eject_media(self, ddrive, mountpoint, ddevice):
+    def eject_media(self, ddrive, mountpoint, ddevice, _type=None):
         # first unmount if the case
         if mountpoint != "N":
             ret = self.mount_device(mountpoint, ddevice)
@@ -3810,8 +3815,8 @@ class MainWin(QWidget):
         if ret == -1:
             MyDialog("Info", "The device cannot be ejected.", self)
             return
-        #
-        if can_poweroff:
+        # do not turn the usb cd reader off
+        if can_poweroff and _type != 1:
             try:
                 ret = self.on_poweroff(ddrive)
                 # if ret == -1:
