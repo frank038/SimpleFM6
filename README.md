@@ -30,6 +30,7 @@ Features:
 - custom folder icon
 - sticky selection (also) by pressing in the circle
 - manages the permissions of multiple files at once (without checking the previous state of each of them, obviously)
+- can be used under Xorg and under Wayland
 - and more...
 
 Thumbnail and device features are to be enabled in the config file.
