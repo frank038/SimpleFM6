@@ -1,5 +1,5 @@
 # SimpleFM6
-A file manager written in PyQt6. It's a porting to the Qt6 toolkit of my SimpleFM (Qt5 toolkit).
+A file manager written in PyQt6. It's the Qt6 version with some enhancements of my SimpleFM (Qt5 toolkit).
 
 Requirements:
 - python3
