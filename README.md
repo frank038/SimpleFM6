@@ -35,7 +35,7 @@ Features:
 
 Thumbnail and device features are to be enabled in the config file.
 
-The file simplefmdaemon6.py is a dbus implementation of the freedesktop.org's file manager interface (let user launch SimpleFM6 from a browser after a file has been downloaded). The full path of the file SimpleFM6.sh has to be setted in the file simplefmdaemon6.py at line 23. Alternatively, a simplest but limited method is to associate SimpleFM6 to folders as default program for that mimetype.
+The file simplefmdaemon6.py is a dbus implementation of the freedesktop.org's file manager interface (let user launch SimpleFM6 from a browser after a file has been downloaded). The full path of the file SimpleFM6.sh has to be setted in the file simplefmdaemon6.py at line 23. Alternatively, a simplest but limited method is to associate SimpleFM6 to folders as default program for that mimetype, and creating a desktop file launching SimpleFM.sh.
 
 The 'Shift key' behaviour: to select a certain amount of contiguous items, select the first, press the shift key and select the last; to move the selected items by using the shift key, press the shift key and start dragging the last selected item.
 
