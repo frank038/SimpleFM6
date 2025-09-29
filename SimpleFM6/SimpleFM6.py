@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.6.8
+# version 1.6.9
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -6011,6 +6011,15 @@ class getAppsByMime():
             # skip the removed associations
             if idesktop in lRemoved:
                 continue
+            # skip the applications already in the Default section
+            _def_found = 0
+            for el in listPrograms:
+                if os.path.basename(el[2]) == idesktop:
+                    _def_found = 1
+                    break
+            if _def_found == 1:
+                continue
+            #
             desktopPath = ""
             #
             # check if the idesktop is in xdgDataDirs - use it if any
