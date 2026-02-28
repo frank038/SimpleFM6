@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-# version 1.6.9
+# version 1.6.10
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
-from PyQt6.QtGui import (QFileSystemModel,QAction,QDrag,QPixmap,QStaticText,QTextOption,QIcon,QStandardItem,QStandardItemModel,QFontMetrics,QColor,QPalette,QClipboard,QPainter,QFont,QPen)
+from PyQt6.QtGui import (QGuiApplication,QFileSystemModel,QAction,QDrag,QPixmap,QStaticText,QTextOption,QIcon,QStandardItem,QStandardItemModel,QFontMetrics,QColor,QPalette,QClipboard,QPainter,QFont,QPen)
 import dbus
 import psutil
 import sys
@@ -1893,7 +1893,7 @@ class pasteNmergeDialog(QDialog):
         overwriteButton.clicked.connect(lambda:self.fsetValue(2))
         # add an preformatted extension to the items
         automaticButton = QPushButton("Automatic")
-        automaticButton.setToolTip("A suffix will be added to files an folders.")
+        automaticButton.setToolTip("A suffix will be added to files and folders.")
         hbox.addWidget(automaticButton)
         automaticButton.clicked.connect(lambda:self.fsetValue(4))
         # backup the existen item(s)
@@ -3954,11 +3954,11 @@ class MainWin(QWidget):
     def on_close(self):
         new_w = self.size().width()
         new_h = self.size().height()
-        if new_w != int(WINW) or new_h != int(WINH):
+        isMaximized = self.isMaximized()
+        if new_w != int(WINW) or new_h != int(WINH) or isMaximized != WINM:
             # WINW = width
             # WINH = height
             # WINM = maximized
-            isMaximized = self.isMaximized()
             if isMaximized == True and WINM == "True":
                 QApplication.instance().quit()
                 return
@@ -6269,7 +6269,10 @@ class PastenMerge():
                 elif got_action == "cut":
                     self.action = 2
                 filePaths = [unquote(x)[7:] for x in got_quoted_data[1:]]
-        #
+        # remove empty entries
+        for _f in filePaths[:]:
+            if _f == '':
+                filePaths.remove(_f)
         return filePaths
     
     # paste and merge function
@@ -7852,6 +7855,7 @@ if __name__ == '__main__':
         # palette.setColor(QPalette.ColorRole.Highlight, QColor(HIRED, HIGREEN, HIBLUE))
         # app.setPalette(palette)
     #
+    QGuiApplication.setDesktopFileName("simplefm6")
     window = MainWin()
     window.show()
     ret = app.exec()

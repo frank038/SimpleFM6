@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=SimpleFM6
+Comment=File Manager
+Icon=system-file-manager
+Exec=/FULL_PATH/SimpleFM6/SimpleFM6.sh
+Actions=
+Categories=System;
