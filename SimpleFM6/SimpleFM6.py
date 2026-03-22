@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.6.10
+# version 1.6.11
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -4409,6 +4409,9 @@ class LView(QBoxLayout):
         self.scroll.setFrameStyle(0)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        # self.scroll.horizontalScrollBar().setEnabled(True)
+        # self.scroll.verticalScrollBar().setEnabled(False)
+        # self.scroll.verticalScrollBar().hide()
         self.scroll.installEventFilter(self)
         self.scroll.setContentsMargins(QMargins(0,0,0,0))
         self.scroll.setObjectName("taskscrollarea")
@@ -5099,7 +5102,7 @@ class LView(QBoxLayout):
                 #
                 if ret == 2:
                     try:
-                        subprocess.Popen(path, shell=True, cwd=os.path.dirname(path))
+                        subprocess.Popen(path, shell=False, cwd=os.path.dirname(path))
                     except Exception as E:
                         MyDialog("Error", str(E), self.window)
                     finally:
@@ -7133,7 +7136,7 @@ class cTView(QBoxLayout):
                 #
                 if ret == 2:
                     try:
-                        subprocess.Popen(path, shell=True, cwd=os.path.dirname(path))
+                        subprocess.Popen(path, shell=False, cwd=os.path.dirname(path))
                     except Exception as E:
                         MyDialog("Error", str(E), self.window)
                     finally:
