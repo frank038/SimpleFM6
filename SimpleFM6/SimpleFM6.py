@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.6.11
+# version 1.6.12
 
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -2092,34 +2092,17 @@ class copyThread2(QThread):
                                 newDestDir = self.faddSuffix2(commSfx, tdest)
                             else:
                                 newDestDir = self.faddSuffix(tdest)
-                            # first create the dir
-                            try:
-                                os.makedirs(newDestDir)
-                            except Exception as E:
-                                not_to_skip += 1
-                                if not_to_skip < num_not_to_skip:
-                                    items_skipped += "{}:\n{}\n------------\n".format(newDestDir, str(E))
-                                continue
+                            #
                             # copy or move
                             try:
-                                for sdir,ddir,ffile in os.walk(dfile):
-                                    if action == 1:
-                                        for dr in ddir:
-                                            shutil.copytree(os.path.join(sdir, dr), os.path.join(newDestDir, dr), symlinks=True, ignore=None, copy_function=shutil.copy2, ignore_dangling_symlinks=False)
-                                        for ff in ffile:
-                                            shutil.copy2(os.path.join(sdir, ff), newDestDir, follow_symlinks=False)
-                                    elif action == 2:
-                                        for dr in ddir:
-                                            shutil.move(os.path.join(sdir, dr), newDestDir)
-                                        for ff in ffile:
-                                            shutil.move(os.path.join(sdir, ff), newDestDir)
+                                shutil.copytree(dfile, newDestDir, symlinks=True, ignore=None, copy_function=shutil.copy2, ignore_dangling_symlinks=False)
                             except Exception as E:
                                 not_to_skip += 1
                                 if not_to_skip < num_not_to_skip:
                                     items_skipped += "{}:\n{}\n------------\n".format(newDestDir, str(E))
                                 continue
                             try:
-                                if action == 2:
+                                if action == 2 and items_skipped == "":
                                     shutil.rmtree(dfile)
                             except Exception as E:
                                 not_to_skip += 1
@@ -2273,6 +2256,11 @@ class copyThread2(QThread):
                                             not_to_skip += 1
                                             if not_to_skip < num_not_to_skip:
                                                 items_skipped += "{}:\n{}\n------------\n".format(os.path.join(sdir,item_file), str(E))
+                            if action == 2 and items_skipped == "":
+                                try:
+                                    shutil.rmtree(dfile)
+                                except Exception as E:
+                                    items_skipped += "{}:\n{}\n------------\n".format(dfile, str(E))
                         #
                         #############
                 # origin and destination are the exactly same directory
@@ -3515,6 +3503,9 @@ class MainWin(QWidget):
                     except Exception as E:
                         MyDialog("Error", str(E), self)
         ####
+        # for closing open tabs
+        self.device_mountPoint = []
+        #
         parg = ""
         # self._lvFile = None
         # self._scroll_listview = None
@@ -3522,7 +3513,7 @@ class MainWin(QWidget):
         if len(sys.argv) > 1:
             parg = sys.argv[1]
             # remove the last slash character if useless
-            if parg != "trash://" and len(parg) > 1 and parg[-1] == "/":
+            if parg != "trash://" and parg[0:8] != "media://" and len(parg) > 1 and parg[-1] == "/":
                 parg = parg[:-1]
             #
             # for i in range(1, len(sys.argv) -1):
@@ -3538,6 +3529,12 @@ class MainWin(QWidget):
             if USE_TRASH:
                 openTrash(self, "HOME")
             else:
+                self.openDir(HOME, 1)
+        elif parg[0:8] == "media://":
+            ddevice = parg[8:]
+            ret_mountpoint = self.get_device_mountpoint(ddevice)
+            ret = self.open_device(ret_mountpoint, ddevice)
+            if ret == "N" or ret == None:
                 self.openDir(HOME, 1)
         else:
             # "//" is not a directory
@@ -3557,8 +3554,6 @@ class MainWin(QWidget):
                         break
                 #
                 self.openDir(path, 1)
-        # for closing open tabs
-        self.device_mountPoint = []
 
     
     # check its state: empty or not empty
@@ -3743,13 +3738,15 @@ class MainWin(QWidget):
             ret = self.mount_device(mountpoint, ddevice)
             if ret == -1:
                 MyDialog("Info", "The device cannot be mounted.", self)
-                return
+                return "N"
             else:
                 mountpoint = ret
         #
-        if mountpoint:
+        if mountpoint != "N" and mountpoint != None:
             self.openDir(mountpoint, 1)
             self.device_mountPoint.append([ddevice, mountpoint])
+        #
+        return mountpoint
     
     # close the open tabs
     def close_open_tab(self, mountpoint):
