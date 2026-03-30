@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-# version 1.6.12
-
+# version 1.6.20
+from sfmlang import *
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
 from PyQt6.QtGui import (QGuiApplication,QFileSystemModel,QAction,QDrag,QPixmap,QStaticText,QTextOption,QIcon,QStandardItem,QStandardItemModel,QFontMetrics,QColor,QPalette,QClipboard,QPainter,QFont,QPen)
@@ -160,7 +160,7 @@ class firstMessage(QWidget):
         self.setLayout(box)
         label = QLabel(message)
         box.addWidget(label)
-        button = QPushButton("Close")
+        button = QPushButton(SFMTEXT59)
         box.addWidget(button)
         button.clicked.connect(self.close)
         self.show()
@@ -177,15 +177,15 @@ class firstMessage(QWidget):
 if not os.path.exists("winsize.cfg"):
     try:
         with open("winsize.cfg", "w") as ifile:
-            ifile.write("1200;900;False")
+            ifile.write("800;600;False")
     except:
         app = QApplication(sys.argv)
-        fm = firstMessage("Error", "The file winsize.cfg cannot be created.")
+        fm = firstMessage(SFMERROR, SFMERROR1)
         sys.exit(app.exec())
 
 if not os.access("winsize.cfg", os.R_OK):
     app = QApplication(sys.argv)
-    fm = firstMessage("Error", "The file winsize.cfg cannot be read.")
+    fm = firstMessage(SFMERROR, SFMERROR2)
     sys.exit(app.exec())
 
 if not os.path.exists("Bookmarks"):
@@ -193,7 +193,7 @@ if not os.path.exists("Bookmarks"):
         ifile = open("Bookmarks", "w")
         ifile.close()
     except Exception as E:
-        fm = firstMessage("Error", str(E))
+        fm = firstMessage(SFMERROR, str(E))
         sys.exit(app.exec())
 
 WINW = 800
@@ -208,7 +208,7 @@ try:
     WINM = am.strip()
 except:
     app = QApplication(sys.argv)
-    fm = firstMessage("Error", "The file winsize.cfg cannot be read.\nRebuilded.")
+    fm = firstMessage(SFMERROR, SFMERROR3)
     try:
         with open("winsize.cfg", "w") as ifile:
             ifile.write("800;600;False")
@@ -230,7 +230,7 @@ if USE_TRASH:
         import trash_module
     except Exception as E:
         app = QApplication(sys.argv)
-        fm = firstMessage("Error", "Error while importing the module:\n{}".format(str(E)))
+        fm = firstMessage(SFMERROR, "{}\n{}".format(SFMERROR4, str(E)))
         sys.exit(app.exec())
 
 # additional text
@@ -239,7 +239,7 @@ if USE_AD:
         from custom_icon_text import fcit
     except Exception as E:
         app = QApplication(sys.argv)
-        fm = firstMessage("Error", "Error while importing the module:\n{}".format(str(E)))
+        fm = firstMessage(SFMERROR, "{}\n{}".format(SFMERROR4, str(E)))
         USE_AD = 0
 
 if not os.path.exists("modules_custom"):
@@ -247,7 +247,7 @@ if not os.path.exists("modules_custom"):
         os.mkdir("modules_custom")
     except:
         app = QApplication(sys.argv)
-        fm = firstMessage("Error", "Cannot create the modules_custom folder. Exiting...")
+        fm = firstMessage(SFMERROR, SFMERROR5)
         sys.exit(app.exec())
 
 sys.path.append("modules_custom")
@@ -259,12 +259,12 @@ for el in reversed(mmod_custom):
         list_custom_modules.append(ee)
     except ImportError as ioe:
         app = QApplication(sys.argv)
-        fm = firstMessage("Error", "Error while importing the plugin:\n{}".format(str(ioe)))
+        fm = firstMessage(SFMERROR, "{}\n{}".format(SFMERROR6, str(ioe)))
         sys.exit(app.exec())
 
 if not os.path.exists("icons"):
     app = QApplication(sys.argv)
-    fm = firstMessage("Error", "The folder icons doesn't exist. Exiting...")
+    fm = firstMessage(SFMERROR, SFMERROR7)
     sys.exit(app.exec())
 
 #
@@ -304,13 +304,13 @@ class clabel2(QLabel):
 class MyDialog(QMessageBox):
     def __init__(self, *args):
         super(MyDialog, self).__init__(args[-1])
-        if args[0] == "Info":
+        if args[0] == SFMINFO:
             self.setIcon(QMessageBox.Icon.Information)
             self.setStandardButtons(QMessageBox.StandardButton.Ok)
-        elif args[0] == "Error":
+        elif args[0] == SFMERROR:
             self.setIcon(QMessageBox.Icon.Critical)
             self.setStandardButtons(QMessageBox.StandardButton.Ok)
-        elif args[0] == "Question":
+        elif args[0] == SFMQUESTION:
             self.setIcon(QMessageBox.Icon.Question)
             self.setStandardButtons(QMessageBox.StandardButton.Ok|QMessageBox.StandardButton.Cancel)
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
@@ -341,7 +341,7 @@ class MyMessageBox(QMessageBox):
         self.resize(dialWidth,100)
         self.setText(args[1])
         self.setInformativeText(args[2])
-        self.setDetailedText("The details are as follows:\n\n"+args[3])
+        self.setDetailedText(SFMTEXT01+args[3])
         self.setStandardButtons(QMessageBox.StandardButton.Ok)
         retval = self.exec()
     
@@ -374,7 +374,7 @@ class MyDialogRename2(QDialog):
         self.itemPath = os.path.join(self.dest_path, self.item_name)
         #
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
-        self.setWindowTitle("Rename")
+        self.setWindowTitle(SFMTEXT02)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.resize(dialWidth,100)
@@ -383,14 +383,14 @@ class MyDialogRename2(QDialog):
         mbox.setContentsMargins(5,5,5,5)
         self.setLayout(mbox)
         #
-        label1 = QLabel("Old name:")
+        label1 = QLabel(SFMTEXT03)
         mbox.addWidget(label1)
         #
         label2 = clabel2()
         label2.setText(self.item_name, self.size().width()-12)
         mbox.addWidget(label2)
         #
-        label3 = QLabel("New name:")
+        label3 = QLabel(SFMTEXT04)
         mbox.addWidget(label3)
         #
         self.lineedit = QLineEdit()
@@ -404,11 +404,11 @@ class MyDialogRename2(QDialog):
         box = QBoxLayout(QBoxLayout.Direction.LeftToRight)
         mbox.addLayout(box)
         #
-        button1 = QPushButton("OK")
+        button1 = QPushButton(SFMTEXT05)
         box.addWidget(button1)
         button1.clicked.connect(lambda:self.faccept(self.item_name))
         #
-        button3 = QPushButton("Cancel")
+        button3 = QPushButton(SFMTEXT06)
         box.addWidget(button3)
         button3.clicked.connect(self.fcancel)
         #
@@ -442,7 +442,7 @@ class MyDialogRename3(QDialog):
         super(MyDialogRename3, self).__init__(args[-1])
         #
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
-        self.setWindowTitle("Set a new name")
+        self.setWindowTitle(SFMTEXT07)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.resize(dialWidth,100)
@@ -451,7 +451,7 @@ class MyDialogRename3(QDialog):
         mbox.setContentsMargins(5,5,5,5)
         self.setLayout(mbox)
         #
-        label1 = QLabel("Choose a new name:")
+        label1 = QLabel(SFMTEXT08)
         mbox.addWidget(label1)
         #
         self.lineedit = QLineEdit()
@@ -465,11 +465,11 @@ class MyDialogRename3(QDialog):
         box = QBoxLayout(QBoxLayout.Direction.LeftToRight)
         mbox.addLayout(box)
         #
-        button1 = QPushButton("OK")
+        button1 = QPushButton(SFMTEXT05)
         box.addWidget(button1)
         button1.clicked.connect(lambda:self.faccept(args[0], args[1]))
         #
-        button3 = QPushButton("Cancel")
+        button3 = QPushButton(SFMTEXT06)
         box.addWidget(button3)
         button3.clicked.connect(self.fcancel)
         #
@@ -501,7 +501,7 @@ class otherApp(QDialog):
         super(otherApp, self).__init__(parent)
         #
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
-        self.setWindowTitle("Other application")
+        self.setWindowTitle(SFMTEXT09)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.resize(dialWidth,100)
@@ -509,7 +509,7 @@ class otherApp(QDialog):
         grid = QGridLayout()
         grid.setContentsMargins(5,5,5,5)
         #
-        label1 = QLabel("\nChoose the application:")
+        label1 = QLabel(SFMTEXT10)
         grid.addWidget(label1, 0, 0, Qt.AlignmentFlag.AlignCenter)
         #
         self.lineedit = QLineEdit()
@@ -518,11 +518,11 @@ class otherApp(QDialog):
         button_box = QBoxLayout(QBoxLayout.Direction.LeftToRight)
         grid.addLayout(button_box, 2, 0)
         #
-        button1 = QPushButton("OK")
+        button1 = QPushButton(SFMTEXT05)
         button_box.addWidget(button1)
         button1.clicked.connect(self.faccept)
         #
-        button3 = QPushButton("Cancel")
+        button3 = QPushButton(SFMTEXT06)
         button_box.addWidget(button3)
         button3.clicked.connect(self.fcancel)
         #
@@ -550,7 +550,7 @@ class PlistMenu(QDialog):
     def __init__(self, parent=None):
         super(PlistMenu, self).__init__(parent)
         #
-        self.setWindowTitle("Open with...")
+        self.setWindowTitle(SFMTEXT11)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
@@ -569,11 +569,11 @@ class PlistMenu(QDialog):
         hbox = QBoxLayout(QBoxLayout.Direction.LeftToRight)
         vbox.addLayout(hbox)
         #
-        button1 = QPushButton("Ok")
+        button1 = QPushButton(SFMTEXT05)
         hbox.addWidget(button1)
         button1.clicked.connect(self.fexecute)
         #
-        button2 = QPushButton("Cancel")
+        button2 = QPushButton(SFMTEXT06)
         hbox.addWidget(button2)
         button2.clicked.connect(self.fcancel)
         #### the menu
@@ -710,9 +710,9 @@ def check_free_disc_space(path, dest):
 
 def convert_size(fsize2):
     if fsize2 == 0 or fsize2 == 1:
-        sfsize = str(fsize2)+" byte"
+        sfsize = str(fsize2)+SFMTEXT171
     elif fsize2//1024 == 0:
-        sfsize = str(fsize2)+" bytes"
+        sfsize = str(fsize2)+SFMTEXT172
     elif fsize2//1048576 == 0:
         sfsize = str(round(fsize2/1024, 3))+" KB"
     elif fsize2//1073741824 == 0:
@@ -756,7 +756,7 @@ class propertyDialog(QDialog):
                 storageInfoIsReadOnly = 0
         #
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
-        self.setWindowTitle("Property")
+        self.setWindowTitle(SFMTEXT12)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.resize(dialWidth, 100)
         #
@@ -776,27 +776,27 @@ class propertyDialog(QDialog):
         self.grid1 = QGridLayout()
         page1.setLayout(self.grid1)
         #
-        labelName = QLabel("<i>Name</i>")
+        labelName = QLabel(SFMTEXT160)
         self.grid1.addWidget(labelName, 0, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
         self.labelName2 = clabel2()
         self.labelName2.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.grid1.addWidget(self.labelName2, 0, 1, 1, 4, Qt.AlignmentFlag.AlignLeft)
         #
-        labelMime = QLabel("<i>MimeType</i>")
+        labelMime = QLabel(SFMTEXT159)
         self.grid1.addWidget(labelMime, 2, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
         self.labelMime2 = QLabel()
         self.grid1.addWidget(self.labelMime2, 2, 1, 1, 4, Qt.AlignmentFlag.AlignLeft)
         #
         if os.path.isfile(itemPath) or os.path.isdir(itemPath):
-            labelOpenWith = QLabel("<i>Open With...</i>")
+            labelOpenWith = QLabel(SFMTEXT158)
             self.grid1.addWidget(labelOpenWith, 3, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
-            self.btnOpenWith = QPushButton("----------")
+            self.btnOpenWith = QPushButton(SFMTEXT20)
             self.btnOpenWith.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
             self.btnOpenWith.clicked.connect(self.fbtnOpenWith)
             self.grid1.addWidget(self.btnOpenWith, 3, 1, 1, 4, Qt.AlignmentFlag.AlignLeft)
             self.btnOpenWithPopulate()
         #
-        labelSize = QLabel("<i>Size</i>")
+        labelSize = QLabel(SFMTEXT164)
         self.grid1.addWidget(labelSize, 4, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
         self.labelSize2 = QLabel()
         self.grid1.addWidget(self.labelSize2, 4, 1, 1, 4, Qt.AlignmentFlag.AlignLeft)
@@ -804,16 +804,16 @@ class propertyDialog(QDialog):
         if not os.path.exists(self.itemPath):
             if os.path.islink(self.itemPath):
                 self.labelName2.setText(os.path.basename(self.itemPath), self.size().width()-12)
-                self.labelMime2.setText("Broken link")
+                self.labelMime2.setText(SFMTEXT13)
                 labelSize.hide()
                 self.labelSize2.hide()
-                label_real_link = QLabel("<i>To Path</i>")
+                label_real_link = QLabel(SFMTEXT157)
                 self.grid1.addWidget(label_real_link, 5, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
                 label_real_link2 = clabel2()
                 label_real_link2.setText(os.path.realpath(self.itemPath), self.size().width()-12)
                 self.grid1.addWidget(label_real_link2, 5, 1, 1, 4, Qt.AlignmentFlag.AlignLeft)
                 #
-                button1 = QPushButton("OK")
+                button1 = QPushButton(SFMTEXT05)
                 button1.clicked.connect(self.faccept)
                 hbox = QBoxLayout(QBoxLayout.Direction.LeftToRight)
                 vbox.addLayout(hbox)
@@ -823,23 +823,23 @@ class propertyDialog(QDialog):
                 self.exec()
         elif os.path.exists(self.itemPath):
             if os.path.islink(self.itemPath):
-                label_real_link = QLabel("<i>To Path</i>")
+                label_real_link = QLabel(SFMTEXT157)
                 self.grid1.addWidget(label_real_link, 5, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
                 label_real_link2 = clabel2()
                 label_real_link2.setText(os.path.realpath(self.itemPath), self.size().width()-12)
                 self.grid1.addWidget(label_real_link2, 5, 1, 1, 4, Qt.AlignmentFlag.AlignLeft)
             #
-            labelCreation = QLabel("<i>Creation</i>")
+            labelCreation = QLabel(SFMTEXT173)
             self.grid1.addWidget(labelCreation, 6, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
             self.labelCreation2 = QLabel()
             self.grid1.addWidget(self.labelCreation2, 6, 1, 1, 4, Qt.AlignmentFlag.AlignLeft)
             #
-            labelModification = QLabel("<i>Modification</i>")
+            labelModification = QLabel(SFMTEXT174)
             self.grid1.addWidget(labelModification, 7, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
             self.labelModification2 = QLabel()
             self.grid1.addWidget(self.labelModification2, 7, 1, 1, 4, Qt.AlignmentFlag.AlignLeft)
             #
-            labelAccess = QLabel("<i>Access</i>")
+            labelAccess = QLabel(SFMTEXT175)
             self.grid1.addWidget(labelAccess, 8, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
             self.labelAccess2 = QLabel()
             self.grid1.addWidget(self.labelAccess2, 8, 1, 1, 4, Qt.AlignmentFlag.AlignLeft)
@@ -870,7 +870,7 @@ class propertyDialog(QDialog):
                 file_mountpoint = "Boot"
             elif file_mountpoint == "/home":
                 file_mountpoint = "Home"
-            label_partition = QLabel("<i>Disc {}</i>".format(file_mountpoint))
+            label_partition = QLabel("{} {}".format(SFMTEXT176, file_mountpoint))
             self.grid1.addWidget(label_partition, 9, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
             label_partition2 = QLabel()
             disc_size = convert_size(psutil.disk_usage(data_mountpoint.mountpoint).total)
@@ -879,48 +879,48 @@ class propertyDialog(QDialog):
             self.grid1.addWidget(label_partition2, 9, 1, 1, 4, Qt.AlignmentFlag.AlignLeft)
             ###### tab 2
             page2 = QWidget()
-            self.gtab.addTab(page2, "Permissions")
+            self.gtab.addTab(page2, SFMTEXT177)
             vboxp2 = QBoxLayout(QBoxLayout.Direction.TopToBottom)
             page2.setLayout(vboxp2)
             #
-            gBox1 = QGroupBox("Ownership")
+            gBox1 = QGroupBox(SFMTEXT17)
             vboxp2.addWidget(gBox1)
             self.grid2 = QGridLayout()
             gBox1.setLayout(self.grid2)
             #
-            labelgb11 = QLabel("<i>Owner</i>")
+            labelgb11 = QLabel(SFMTEXT178)
             self.grid2.addWidget(labelgb11, 0, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
             self.labelgb12 = QLabel()
             self.grid2.addWidget(self.labelgb12, 0, 1, 1, 5, Qt.AlignmentFlag.AlignLeft)
             #
-            labelgb21 = QLabel("<i>Group</i>")
+            labelgb21 = QLabel(SFMTEXT179)
             self.grid2.addWidget(labelgb21, 1, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
             self.labelgb22 = QLabel()
             self.grid2.addWidget(self.labelgb22, 1, 1, 1, 5, Qt.AlignmentFlag.AlignLeft)
             #
-            gBox2 = QGroupBox("Permissions")
+            gBox2 = QGroupBox(SFMTEXT18)
             vboxp2.addWidget(gBox2)
             self.grid3 = QGridLayout()
             gBox2.setLayout(self.grid3)
             if storageInfoIsReadOnly:
                 gBox2.setEnabled(False)
             #
-            labelOwnerPerm = QLabel("<i>Owner</i>")
+            labelOwnerPerm = QLabel(SFMTEXT178)
             self.grid3.addWidget(labelOwnerPerm, 0, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
             self.combo1 = QComboBox()
-            self.combo1.addItems(["Read and Write", "Read", "Forbidden"])
+            self.combo1.addItems([SFMTEXT181, SFMTEXT182, SFMTEXT183])
             self.grid3.addWidget(self.combo1, 0, 1, 1, 5, Qt.AlignmentFlag.AlignLeft)
             #
-            labelGroupPerm = QLabel("<i>Group</i>")
+            labelGroupPerm = QLabel(SFMTEXT179)
             self.grid3.addWidget(labelGroupPerm, 1, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
             self.combo2 = QComboBox()
-            self.combo2.addItems(["Read and Write", "Read", "Forbidden"])
+            self.combo2.addItems([SFMTEXT181, SFMTEXT182, SFMTEXT183])
             self.grid3.addWidget(self.combo2, 1, 1, 1, 5, Qt.AlignmentFlag.AlignLeft)
             #
-            labelOtherPerm = QLabel("<i>Others</i>")
+            labelOtherPerm = QLabel(SFMTEXT180)
             self.grid3.addWidget(labelOtherPerm, 2, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
             self.combo3 = QComboBox()
-            self.combo3.addItems(["Read and Write", "Read", "Forbidden"])
+            self.combo3.addItems([SFMTEXT181, SFMTEXT182, SFMTEXT183])
             self.grid3.addWidget(self.combo3, 2, 1, 1, 5, Qt.AlignmentFlag.AlignLeft)
             #
             self.combo1.activated.connect(self.fcombo1)
@@ -928,12 +928,12 @@ class propertyDialog(QDialog):
             self.combo3.activated.connect(self.fcombo3)
             #
             # change owner button
-            self.own_btn = QPushButton("Change")
+            self.own_btn = QPushButton(SFMTEXT19)
             if self.CAN_CHANGE_OWNER:
                 self.own_btn.clicked.connect(lambda:self.on_change_owner(me = os.path.basename(os.getenv("HOME"))))
             self.grid2.addWidget(self.own_btn, 0, 6, 1, 1, Qt.AlignmentFlag.AlignLeft)
             # change group button
-            self.grp_btn = QPushButton("Change")
+            self.grp_btn = QPushButton(SFMTEXT19)
             if self.CAN_CHANGE_OWNER:
                 self.grp_btn.clicked.connect(lambda:self.on_change_grp(me = os.path.basename(os.getenv("HOME"))))
             self.grid2.addWidget(self.grp_btn, 1, 6, 1, 1, Qt.AlignmentFlag.AlignLeft)
@@ -955,7 +955,7 @@ class propertyDialog(QDialog):
             if not self.CAN_CHANGE_OWNER:
                 self.ibtn.setEnabled(False)
             #
-            button1 = QPushButton("OK")
+            button1 = QPushButton(SFMTEXT05)
             button1.clicked.connect(self.faccept)
             #
             hbox = QBoxLayout(QBoxLayout.Direction.LeftToRight)
@@ -977,7 +977,7 @@ class propertyDialog(QDialog):
                 self.btnOpenWith.setText(iprog[1])
                 return
         #    else:
-        self.btnOpenWith.setText("----------")
+        self.btnOpenWith.setText(SFMTEXT20)
     
     
     # see comboOpenWithPopulate
@@ -1012,14 +1012,14 @@ class propertyDialog(QDialog):
                 # if ret.returncode == 0:
             try:
                 if "i" not in subprocess.check_output(['lsattr', self.itemPath]).decode()[:19]:
-                    self.ibtn.setText("Not Immutable")
+                    self.ibtn.setText(SFMTEXT21)
             except:
                 pass
         # set
         else:
             # SYS_PASSWORD = passWord("archive_name", None).arpass
             # if not SYS_PASSWORD:
-                # MyDialog("Info", "Cancelled.", None)
+                # MyDialog(SFMINFO, "Cancelled.", None)
                 # return
             # else:
                 # return
@@ -1037,7 +1037,7 @@ class propertyDialog(QDialog):
                 # if ret.returncode == 0:
             try:
                 if "i" in subprocess.check_output(['lsattr', self.itemPath]).decode()[:19]:
-                    self.ibtn.setText("Immutable")
+                    self.ibtn.setText(SFMTEXT22)
             except:
                 pass
         # repopulate
@@ -1048,11 +1048,11 @@ class propertyDialog(QDialog):
     def tab(self):
         # folder access - file executable
         if os.path.isdir(self.itemPath):
-            self.cb1.setText('folder access')
+            self.cb1.setText(SFMTEXT23)
         elif os.path.isfile(self.itemPath):
-            self.cb1.setText('Executable')
+            self.cb1.setText(SFMTEXT24)
         else:
-            self.cb1.setText('Executable')
+            self.cb1.setText(SFMTEXT24)
         #
         # set or unset the immutable flag
         if self.CAN_CHANGE_OWNER:
@@ -1060,9 +1060,9 @@ class propertyDialog(QDialog):
                 if os.path.isfile(self.itemPath) and not os.path.islink(self.itemPath):
                     try:
                         if "i" in subprocess.check_output(['lsattr', self.itemPath]).decode()[:19]:
-                            self.ibtn.setText("Immutable")
+                            self.ibtn.setText(SFMTEXT22)
                         else:
-                            self.ibtn.setText("Not Immutable")
+                            self.ibtn.setText(SFMTEXT25)
                     except:
                         self.ibtn.setEnabled(False)
                         self.ibtn.hide()
@@ -1082,19 +1082,19 @@ class propertyDialog(QDialog):
         #
         if not os.path.exists(self.itemPath):
             if os.path.islink(self.itemPath):
-                self.labelSize2.setText("(Broken Link)")
+                self.labelSize2.setText(SFMTEXT26)
             else:
-                self.labelSize2.setText("Unrecognizable")
+                self.labelSize2.setText(SFMTEXT27)
         if os.path.isfile(self.itemPath):
             if os.access(self.itemPath, os.R_OK):
                 self.labelSize2.setText(convert_size(QFileInfo(self.itemPath).size()))
             else:
-                self.labelSize2.setText("(Not readable)")
+                self.labelSize2.setText(SFMTEXT28)
         elif os.path.isdir(self.itemPath):
             if os.access(self.itemPath, os.R_OK):
                 self.labelSize2.setText(str(convert_size(folder_size(self.itemPath))))
             else:
-                self.labelSize2.setText("(Not readable)")
+                self.labelSize2.setText(SFMTEXT28)
         else:
             self.labelSize2.setText("0")
         #
@@ -1217,7 +1217,7 @@ class propertyDialog(QDialog):
             try:
                 os.chmod(self.itemPath, int("{}".format(int(tperm)), 8))
             except Exception as E:
-                MyDialog("Error", str(E), self.window)
+                MyDialog(SFMERROR, str(E), self.window)
         else:
             perms[2] = 0
             perms[5] = 0
@@ -1226,7 +1226,7 @@ class propertyDialog(QDialog):
             try:
                 os.chmod(self.itemPath, int("{}".format(int(tperm)), 8))
             except Exception as E:
-                MyDialog("Error", str(E), self.window)
+                MyDialog(SFMERROR, str(E), self.window)
         # repopulate
         self.tab()
     
@@ -1247,7 +1247,7 @@ class propertyDialog(QDialog):
         try:
             os.chmod(self.itemPath, int("{}".format(tperm), 8))
         except Exception as E:
-            MyDialog("Error", str(E), self.window)
+            MyDialog(SFMERROR, str(E), self.window)
         # repopulate
         self.tab()
     
@@ -1267,7 +1267,7 @@ class propertyDialog(QDialog):
         try:
             os.chmod(self.itemPath, int("{}".format(tperm), 8))
         except Exception as E:
-            MyDialog("Error", str(E), self.window)
+            MyDialog(SFMERROR, str(E), self.window)
         # repopulate
         self.tab()
     
@@ -1287,7 +1287,7 @@ class propertyDialog(QDialog):
         try:
             os.chmod(self.itemPath, int("{}".format(tperm), 8))
         except Exception as E:
-            MyDialog("Error", str(E), self.window)
+            MyDialog(SFMERROR, str(E), self.window)
         # repopulate
         self.tab()
 
@@ -1351,7 +1351,7 @@ class propertyDialogMulti(QDialog):
         super(propertyDialogMulti, self).__init__(parent)
         #
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
-        self.setWindowTitle("Property")
+        self.setWindowTitle(SFMTEXT12)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.resize(dialWidth, 100)
@@ -1371,7 +1371,7 @@ class propertyDialogMulti(QDialog):
         vbox.addWidget(self.gtab)
         #
         page1 = QWidget()
-        self.gtab.addTab(page1, "General")
+        self.gtab.addTab(page1, SFMTEXT184)
         self.grid1 = QGridLayout()
         page1.setLayout(self.grid1)
         #
@@ -1379,14 +1379,14 @@ class propertyDialogMulti(QDialog):
         self.grid1.setRowStretch(0, 1)
         # label1 = QLabel("<i>Number of items&nbsp;&nbsp;&nbsp;</i> {}".format(itemNum))
         # vbox.addWidget(label1)
-        label1 = QLabel("<i>Number of items&nbsp;&nbsp;&nbsp;</i>")
+        label1 = QLabel(SFMTEXT185)
         self.grid1.addWidget(label1, 1, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
         label1a = QLabel(str(len(self.item_list)))
         self.grid1.addWidget(label1a, 1, 1, 1, 4, Qt.AlignmentFlag.AlignLeft)
         #
         # label2 = QLabel("<i>Total size of the items&nbsp;&nbsp;&nbsp;</i> {}".format(itemSize))
         # vbox.addWidget(label2)
-        label2 = QLabel("<i>Total size&nbsp;&nbsp;&nbsp;</i>")
+        label2 = QLabel(SFMTEXT186)
         self.grid1.addWidget(label2, 2, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
         label2a = QLabel(str(total_size))
         self.grid1.addWidget(label2a, 2, 1, 1, 4, Qt.AlignmentFlag.AlignLeft)
@@ -1394,75 +1394,75 @@ class propertyDialogMulti(QDialog):
         self.grid1.setRowStretch(3, 1)
         ##### tab 2
         page2 = QWidget()
-        self.gtab.addTab(page2, "Permissions")
+        self.gtab.addTab(page2, SFMTEXT18)
         vboxp2 = QBoxLayout(QBoxLayout.Direction.TopToBottom)
         page2.setLayout(vboxp2)
         ##
-        gBox1 = QGroupBox("Ownership")
+        gBox1 = QGroupBox(SFMTEXT17)
         vboxp2.addWidget(gBox1)
         self.grid2 = QGridLayout()
         gBox1.setLayout(self.grid2)
         ##
-        labelgb11 = QLabel("<i>Owner</i>")
+        labelgb11 = QLabel(SFMTEXT178)
         self.grid2.addWidget(labelgb11, 0, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
-        self.labelgb12 = QLabel("Change to: "+os.path.basename(os.getenv("HOME")))
+        self.labelgb12 = QLabel(SFMTEXT187+os.path.basename(os.getenv("HOME")))
         self.grid2.addWidget(self.labelgb12, 0, 1, 1, 5, Qt.AlignmentFlag.AlignLeft)
         ##
-        labelgb21 = QLabel("<i>Group</i>")
+        labelgb21 = QLabel(SFMTEXT179)
         self.grid2.addWidget(labelgb21, 1, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
-        self.labelgb22 = QLabel("Change to: "+os.path.basename(os.getenv("HOME")))
+        self.labelgb22 = QLabel(SFMTEXT187+os.path.basename(os.getenv("HOME")))
         self.grid2.addWidget(self.labelgb22, 1, 1, 1, 5, Qt.AlignmentFlag.AlignLeft)
         ## change owner button
-        self.own_btn = QPushButton("Change")
+        self.own_btn = QPushButton(SFMTEXT19)
         self.own_btn.setCheckable(True)
         # if self.CAN_CHANGE_OWNER:
             # self.own_btn.clicked.connect(lambda:self.on_change_owner(me = os.path.basename(os.getenv("HOME"))))
         self.grid2.addWidget(self.own_btn, 0, 6, 1, 1, Qt.AlignmentFlag.AlignLeft)
         ## change group button
-        self.grp_btn = QPushButton("Change")
+        self.grp_btn = QPushButton(SFMTEXT19)
         self.grp_btn.setCheckable(True)
         # if self.CAN_CHANGE_OWNER:
             # self.grp_btn.clicked.connect(lambda:self.on_change_grp(me = os.path.basename(os.getenv("HOME"))))
         self.grid2.addWidget(self.grp_btn, 1, 6, 1, 1, Qt.AlignmentFlag.AlignLeft)
         #
         ## apply the modifications 1
-        button1 = QPushButton("Apply")
+        button1 = QPushButton(SFMTEXT29)
         # vbox.addWidget(button1)
         self.grid2.addWidget(button1, 2, 0, 1, 8, Qt.AlignmentFlag.AlignCenter)
         button1.clicked.connect(self._apply1)
         ##
-        gBox2 = QGroupBox("Permissions")
+        gBox2 = QGroupBox(SFMTEXT18)
         vboxp2.addWidget(gBox2)
         self.grid3 = QGridLayout()
         gBox2.setLayout(self.grid3)
         # if storageInfoIsReadOnly:
             # gBox2.setEnabled(False)
         ##
-        labelOwnerPerm = QLabel("<i>Owner</i>")
+        labelOwnerPerm = QLabel(SFMTEXT178)
         self.grid3.addWidget(labelOwnerPerm, 0, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
         self.combo1 = QComboBox()
         # self.combo1.addItems(["Read and Write", "Read", "Forbidden"])
-        self.combo1.addItems(["Read and Write", "Read"])
+        self.combo1.addItems([SFMTEXT181, SFMTEXT182])
         self.combo1.setCurrentIndex(0)
         self.grid3.addWidget(self.combo1, 0, 1, 1, 5, Qt.AlignmentFlag.AlignLeft)
-        self.btna1 = QPushButton("Apply")
+        self.btna1 = QPushButton(SFMTEXT29)
         self.btna1.clicked.connect(lambda:self._apply2(1))
         self.grid3.addWidget(self.btna1, 0, 1, 1, 6, Qt.AlignmentFlag.AlignRight)
         ##
-        labelGroupPerm = QLabel("<i>Group</i>")
+        labelGroupPerm = QLabel(SFMTEXT179)
         self.grid3.addWidget(labelGroupPerm, 1, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
         self.combo2 = QComboBox()
-        self.combo2.addItems(["Read and Write", "Read", "Forbidden"])
+        self.combo2.addItems([SFMTEXT181, SFMTEXT182, SFMTEXT183])
         self.combo2.setCurrentIndex(0)
         self.grid3.addWidget(self.combo2, 1, 1, 1, 5, Qt.AlignmentFlag.AlignLeft)
         # self.btna2 = QPushButton("Apply")
         # self.btna2.clicked.connect(lambda:self._apply2(2))
         # self.grid3.addWidget(self.btna2, 1, 1, 1, 6, Qt.AlignmentFlag.AlignRight)
         ##
-        labelOtherPerm = QLabel("<i>Others</i>")
+        labelOtherPerm = QLabel(SFMTEXT180)
         self.grid3.addWidget(labelOtherPerm, 2, 0, 1, 1, Qt.AlignmentFlag.AlignRight)
         self.combo3 = QComboBox()
-        self.combo3.addItems(["Read and Write", "Read", "Forbidden"])
+        self.combo3.addItems([SFMTEXT181, SFMTEXT182, SFMTEXT183])
         self.combo3.setCurrentIndex(0)
         self.grid3.addWidget(self.combo3, 2, 1, 1, 5, Qt.AlignmentFlag.AlignLeft)
         # self.btna3 = QPushButton("Apply")
@@ -1474,13 +1474,13 @@ class propertyDialogMulti(QDialog):
         # self.combo3.activated.connect(self.fcombo3)
         #
         #
-        gBox3 = QGroupBox("Other permissions")
+        gBox3 = QGroupBox(SFMTEXT30)
         vboxp2.addWidget(gBox3)
         self.grid4 = QGridLayout()
         gBox3.setLayout(self.grid4)
         ## folder access - file executable
         self.cb1 = QCheckBox()
-        self.cb1.setText("Toggle executable")
+        self.cb1.setText(SFMTEXT31)
         ## set the initial state
         # fileInfo = QFileInfo(self.itemPath)
         # perms = fileInfo.permissions()
@@ -1491,24 +1491,24 @@ class propertyDialogMulti(QDialog):
         # self.cb1.stateChanged.connect(self.fcb1)
         self.grid4.addWidget(self.cb1, 4, 0, 1, 5, Qt.AlignmentFlag.AlignLeft)
         ## immutable file button
-        self.ibtn = QPushButton("Toggle immutable")
+        self.ibtn = QPushButton(SFMTEXT32)
         self.ibtn.setCheckable(True)
         # self.ibtn.clicked.connect(self.ibtn_pkexec)
         self.grid4.addWidget(self.ibtn, 4, 6, 1, 1, Qt.AlignmentFlag.AlignLeft)
         # if not self.CAN_CHANGE_OWNER:
             # self.ibtn.setEnabled(False)
         ## apply the modifications 2
-        button2 = QPushButton("Apply")
+        button2 = QPushButton(SFMTEXT29)
         # vbox.addWidget(button1)
         self.grid4.addWidget(button2, 5, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
         button2.clicked.connect(lambda:self._apply2(4))
         ##
-        button3 = QPushButton("Apply")
+        button3 = QPushButton(SFMTEXT29)
         # vbox.addWidget(button1)
         self.grid4.addWidget(button3, 5, 6, 1, 1, Qt.AlignmentFlag.AlignCenter)
         button3.clicked.connect(lambda:self._apply2(5))
         ###
-        button1 = QPushButton("OK")
+        button1 = QPushButton(SFMTEXT05)
         button1.clicked.connect(self.faccept)
         #
         hbox = QBoxLayout(QBoxLayout.Direction.LeftToRight)
@@ -1528,7 +1528,7 @@ class propertyDialogMulti(QDialog):
         #
         ret = 0
         if _set_own == 1 or _set_grp == 1:
-            _ret = retDialogBox2("Apply the changes?\n", self)
+            _ret = retDialogBox2(SFMTEXT33, self)
             ret = _ret.getValue()
         #
         if ret:
@@ -1540,21 +1540,21 @@ class propertyDialogMulti(QDialog):
             try:
                 if PKEXEC_PROG == 1:
                     if not shutil.which("pkexec"):
-                        MyDialog("Error", "pkexec not found",None)
+                        MyDialog(SFMERROR, SFMERROR8, None)
                         return
                     comm = 'pkexec sh -c "chown linux {}"'.format(_list)
                     ret = os.system(comm)
                     if ret != 0:
-                        MyDialog("Error", "Error with some items.", None)
+                        MyDialog(SFMERROR, SFMERROR9, None)
                 # elif PKEXEC_PROG == 2:
                     # # subprocess.run([PKEXEC, "3", self.itemPath])
                     # passWord(self.itemPath, 3, None)
             except Exception as E:
-                MyDialog("Error", str(E), None)
+                MyDialog(SFMERROR, str(E), None)
         
     
     def _apply2(self, _t):
-        _ret = retDialogBox2("Apply the changes?\n", self)
+        _ret = retDialogBox2(SFMTEXT33, self)
         ret = _ret.getValue()
         if ret != 1:
             return
@@ -1645,7 +1645,7 @@ class propertyDialogMulti(QDialog):
                     _num_items_failure += 1
             except Exception as E:
                 if _num_items_failure < _num_i_f < 20:
-                    _items_failure.append(["Toggle immutable: "+str(E)])
+                    _items_failure.append([SFMTEXT188+str(E)])
                 _num_items_failure += 1
         elif  _btn == 6:
             _list = ""
@@ -1662,7 +1662,7 @@ class propertyDialogMulti(QDialog):
                     _num_items_failure += 1
             except Exception as E:
                 if _num_items_failure < _num_i_f:
-                    _items_failure.append(["Toggle immutable: "+str(E)])
+                    _items_failure.append([SFMTEXT188+str(E)])
                 _num_items_failure += 1
         # permissions
         elif _btn > 100:
@@ -1695,9 +1695,9 @@ class propertyDialogMulti(QDialog):
                 dialogList += el[0]+"\n"
             #
             if _num_items_failure > len(_items_failure):
-                dialogList += "(and others...)\n"
+                dialogList += SFMTEXT34
             #
-            ret = retDialogBox("Info", "Error with these items.", "", dialogList, self.window)
+            ret = retDialogBox(SFMINFO, SFMINFO1, "", dialogList, self.window)
             #
             # if ret.getValue():
             
@@ -1714,7 +1714,7 @@ class retDialogBox2(QMessageBox):
     def __init__(self, *args):
         super(retDialogBox2, self).__init__(args[-1])
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
-        self.setWindowTitle("Question")
+        self.setWindowTitle(SFMQUESTION)
         self.setIcon(QMessageBox.Icon.Question)
         self.resize(dialWidth, 100)
         self.setText(args[0])
@@ -1752,7 +1752,7 @@ class execfileDialog(QDialog):
         self.flag = flag
         #
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
-        self.setWindowTitle("Info")
+        self.setWindowTitle(SFMINFO)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.resize(dialWidth, 100)
@@ -1761,20 +1761,20 @@ class execfileDialog(QDialog):
         vbox.setContentsMargins(5,5,5,5)
         self.setLayout(vbox)
         #
-        label1 = QLabel("This is an executable file.\nWhat do you want to do?")
+        label1 = QLabel(SFMTEXT35)
         vbox.addWidget(label1)
         hbox = QBoxLayout(QBoxLayout.Direction.LeftToRight)
         vbox.addLayout(hbox)
         #
         if self.flag == 0 or self.flag == 3:
-            button1 = QPushButton("Open")
+            button1 = QPushButton(SFMTEXT36)
             hbox.addWidget(button1)
             button1.clicked.connect(self.fopen)
         if self.flag != 3:
-            button2 = QPushButton("Execute")
+            button2 = QPushButton(SFMTEXT37)
             hbox.addWidget(button2)
             button2.clicked.connect(self.fexecute)
-        button3 = QPushButton("Cancel")
+        button3 = QPushButton(SFMTEXT06)
         hbox.addWidget(button3)
         button3.clicked.connect(self.fcancel)
         self.Value = 0
@@ -1805,16 +1805,16 @@ class retDialogBox(QMessageBox):
         super(retDialogBox, self).__init__(args[-1])
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
         self.setWindowTitle(args[0])
-        if args[0] == "Info":
+        if args[0] == SFMINFO:
             self.setIcon(QMessageBox.Icon.Information)
-        elif args[0] == "Error":
+        elif args[0] == SFMERROR:
             self.setIcon(QMessageBox.Icon.Critical)
-        elif args[0] == "Question":
+        elif args[0] == SFMQUESTION:
             self.setIcon(QMessageBox.Icon.Question)
         self.resize(dialWidth, 100)
         self.setText(args[1])
         self.setInformativeText(args[2])
-        self.setDetailedText("The details are as follows:\n\n"+args[3])
+        self.setDetailedText(SFMTEXT38+args[3])
         self.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel)
         #
         self.Value = None
@@ -1860,7 +1860,7 @@ class pasteNmergeDialog(QDialog):
         self.item_type = item_type
         #
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
-        self.setWindowTitle("Paste and Merge")
+        self.setWindowTitle(SFMTEXT39)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.resize(dialWidth, 100)
@@ -1870,40 +1870,40 @@ class pasteNmergeDialog(QDialog):
         self.setLayout(vbox)
         #
         if self.item_type == "folder":
-            label1 = QLabel("The folder\n"+self.ltitle+"\nexists in\n{}.".format(os.path.dirname(self.destination))+"\nPlease choose the default action for all folders.\nThis choise cannot be changed afterwards.\n")
+            label1 = QLabel(SFMTEXT189+self.ltitle+SFMTEXT190+"\n{}.".format(os.path.dirname(self.destination))+"\nPlease choose the default action for all folders.\nThis choise cannot be changed afterwards.\n")
         elif self.item_type == "file":
-            label1 = QLabel("The file\n"+self.ltitle+"\nexists in\n{}.".format(os.path.dirname(self.destination))+"\nPlease choose the default action for all files.\nThis choise cannot be changed afterwards.\n")
+            label1 = QLabel(SFMTEXT191+self.ltitle+SFMTEXT190+"\n{}.".format(os.path.dirname(self.destination))+"\nPlease choose the default action for all files.\nThis choise cannot be changed afterwards.\n")
         vbox.addWidget(label1)
         #
         hbox = QBoxLayout(QBoxLayout.Direction.LeftToRight)
         vbox.addLayout(hbox)
         # skip all the items
-        skipButton = QPushButton("Skip")
-        skipButton.setToolTip("File and folders with the same name will be skipped.")
+        skipButton = QPushButton(SFMTEXT40)
+        skipButton.setToolTip(SFMTEXT41)
         hbox.addWidget(skipButton)
         skipButton.clicked.connect(lambda:self.fsetValue(1))
         # merge or overwrite all the items
         if self.item_type == "folder":
-            overwriteButton = QPushButton("Merge")
-            overwriteButton.setToolTip("All the folders will be merged.")
+            overwriteButton = QPushButton(SFMTEXT42)
+            overwriteButton.setToolTip(SFMTEXT43)
         elif self.item_type == "file":
-            overwriteButton = QPushButton("Overwrite")
-            overwriteButton.setToolTip("All the files will be overwritten.")
+            overwriteButton = QPushButton(SFMTEXT44)
+            overwriteButton.setToolTip(SFMTEXT45)
         hbox.addWidget(overwriteButton)
         overwriteButton.clicked.connect(lambda:self.fsetValue(2))
         # add an preformatted extension to the items
-        automaticButton = QPushButton("Automatic")
-        automaticButton.setToolTip("A suffix will be added to files and folders.")
+        automaticButton = QPushButton(SFMTEXT46)
+        automaticButton.setToolTip(SFMTEXT47)
         hbox.addWidget(automaticButton)
         automaticButton.clicked.connect(lambda:self.fsetValue(4))
         # backup the existen item(s)
-        backupButton = QPushButton("Backup")
-        backupButton.setToolTip("The original file or folder will be backed up.")
+        backupButton = QPushButton(SFMTEXT48)
+        backupButton.setToolTip(SFMTEXT49)
         hbox.addWidget(backupButton)
         backupButton.clicked.connect(lambda:self.fsetValue(5))
         # abort the operation
-        cancelButton = QPushButton("Cancel")
-        cancelButton.setToolTip("Abort.")
+        cancelButton = QPushButton(SFMTEXT06)
+        cancelButton.setToolTip(SFMTEXT50)
         hbox.addWidget(cancelButton)
         cancelButton.clicked.connect(self.fcancel)
         #
@@ -1989,7 +1989,7 @@ class copyThread2(QThread):
         # limit the number of items to be reported if something goes wrong - 30
         not_to_skip = 0
         num_not_to_skip = 30
-        not_to_skip_msg = "(+ others)"
+        not_to_skip_msg = SFMTEXT51
         # action: copy 1 - cut 2
         action = self.action
         newList = self.newList
@@ -2028,7 +2028,7 @@ class copyThread2(QThread):
                 len_dfile = len(dfile)
                 # if tdest[0:len_dfile] == dfile and not tdest == dfile:
                 if os.path.dirname(tdest) == dfile and not tdest == dfile:
-                    items_skipped += "Recursive copying:\n{}".format(os.path.basename(dfile))
+                    items_skipped += "{}\n{}".format(SFMTEXT192, os.path.basename(dfile))
                     continue
                 # # trying to copy a dir into itself - do not uncomment
                 # if dfile == os.path.dirname(tdest):
@@ -2048,7 +2048,7 @@ class copyThread2(QThread):
                                 else:
                                     ret = self.faddSuffix(tdest)
                                 shutil.move(tdest, ret)
-                                items_skipped += "{}:\nRenamed (broken link).\n------------\n".format(tdest)
+                                items_skipped += "{}:\n{}\n------------\n".format(tdest, SFMTEXT193)
                             #
                             if action == 1:
                                 shutil.copytree(dfile, tdest, symlinks=True, ignore=None, copy_function=shutil.copy2, ignore_dangling_symlinks=False)
@@ -2076,7 +2076,7 @@ class copyThread2(QThread):
                         #
                         # -1 abort if cancelled
                         if self.atypeDir == -1:
-                            items_skipped += "Operation aborted by the user.\n"
+                            items_skipped += SFMTEXT55
                             break
                         # 1 skip
                         elif self.atypeDir == 1:
@@ -2092,8 +2092,28 @@ class copyThread2(QThread):
                                 newDestDir = self.faddSuffix2(commSfx, tdest)
                             else:
                                 newDestDir = self.faddSuffix(tdest)
+                            # # # first create the dir
+                            # # try:
+                                # # os.makedirs(newDestDir)
+                            # # except Exception as E:
+                                # # not_to_skip += 1
+                                # # if not_to_skip < num_not_to_skip:
+                                    # # items_skipped += "{}:\n{}\n------------\n".format(newDestDir, str(E))
+                                # # continue
                             #
                             # copy or move
+                            # # try:
+                                # # for sdir,ddir,ffile in os.walk(dfile):
+                                    # # if action == 1:
+                                        # # for dr in ddir:
+                                            # # shutil.copytree(os.path.join(sdir, dr), os.path.join(newDestDir, dr), symlinks=True, ignore=None, copy_function=shutil.copy2, ignore_dangling_symlinks=False)
+                                        # # for ff in ffile:
+                                            # # shutil.copy2(os.path.join(sdir, ff), newDestDir, follow_symlinks=False)
+                                    # # elif action == 2:
+                                        # # for dr in ddir:
+                                            # # shutil.move(os.path.join(sdir, dr), newDestDir)
+                                        # # for ff in ffile:
+                                            # # shutil.move(os.path.join(sdir, ff), newDestDir)
                             try:
                                 shutil.copytree(dfile, newDestDir, symlinks=True, ignore=None, copy_function=shutil.copy2, ignore_dangling_symlinks=False)
                             except Exception as E:
@@ -2187,7 +2207,7 @@ class copyThread2(QThread):
                                         #
                                         # -1 means cancelled from the rename dialog
                                         if dirfile_dcode == -1:
-                                            items_skipped += "Operation cancelled by the user\n------------\n"
+                                            items_skipped += SFMTEXT56
                                             break
                                         # 1 skip
                                         elif dirfile_dcode == 1:
@@ -2300,11 +2320,11 @@ class copyThread2(QThread):
                                 self.reqNewNm = ""
                         # -1 cancel
                         if self.atype == -1:
-                            items_skipped += "Operation aborted by the user.\n"
+                            items_skipped += SFMTEXT55
                             break
                         # 1 skip
                         elif self.atype == 1:
-                            # items_skipped += "{}:\n{}\n------------\n".format(dfile, "Skipped.")
+                            # items_skipped += "{}:\n{}\n------------\n".format(dfile, SFMTEXT194)
                             continue
                         # 2 overwrite
                         elif self.atype == 2:
@@ -2362,7 +2382,7 @@ class copyThread2(QThread):
                                 else:
                                     ret = self.faddSuffix(tdest)
                                 shutil.move(tdest, ret)
-                                items_skipped += "{}:\nRenamed (broken link)\n------------\n".format(tdest)
+                                items_skipped += "{}:\n{}\n------------\n".format(tdest, SFMTEXT193)
                             except Exception as E:
                                 not_to_skip += 1
                                 if not_to_skip < num_not_to_skip:
@@ -2387,13 +2407,13 @@ class copyThread2(QThread):
                             else:
                                 ret = self.faddSuffix(tdest)
                             shutil.copy2(dfile, ret, follow_symlinks=False)
-                            # items_skipped += "{}:\nCopied and Renamed:\n{}\n------------\n".format(tdest, ret)
+                            # items_skipped += "{}:\n{}\n{}\n------------\n".format(tdest, SFMTEXT195, ret)
                         except Exception as E:
                             not_to_skip += 1
                             if not_to_skip < num_not_to_skip:
                                 items_skipped += "{}:\n{}\n------------\n".format(tdest, str(E))
                     elif action == 2:
-                        items_skipped += "{}:\n{}\n------------\n".format(dfile, "Exactly the same item.")
+                        items_skipped += "{}:\n{}\n------------\n".format(dfile, SFMTEXT196)
         #
         # DONE
         if not_to_skip > 30:
@@ -2418,12 +2438,12 @@ class copyItems2():
         if free_space_left:
             self.myDialog()
         else:
-            MyDialog("Info", "Not enough space on disc.", None)
+            MyDialog(SFMINFO, SFMINFO2, None)
     
     def myDialog(self):
         self.mydialog = QDialog(parent = self.window)
         self.mydialog.setWindowIcon(QIcon("icons/file-manager-red.svg"))
-        self.mydialog.setWindowTitle("Copying...")
+        self.mydialog.setWindowTitle(SFMTEXT57)
         self.mydialog.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.mydialog.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.mydialog.resize(dialWidth,100)
@@ -2432,7 +2452,7 @@ class copyItems2():
         grid.setContentsMargins(5,5,5,5)
         #
         self.label1 = clabel2()
-        self.label1.setText("Processing...", self.mydialog.size().width()-12)
+        self.label1.setText(SFMTEXT58, self.mydialog.size().width()-12)
         grid.addWidget(self.label1, 0, 0, 1, 4, Qt.AlignmentFlag.AlignCenter)
         #
         self.label2 = QLabel("")
@@ -2444,13 +2464,13 @@ class copyItems2():
         self.pb.setValue(0)
         grid.addWidget(self.pb, 3, 0, 1, 4, Qt.AlignmentFlag.AlignCenter)
         #
-        self.button1 = QPushButton("Close")
+        self.button1 = QPushButton(SFMTEXT59)
         self.button1.clicked.connect(self.fbutton1)
         grid.addWidget(self.button1, 4, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
         #
         self.button1.setEnabled(False)
         #
-        self.button2 = QPushButton("Abort")
+        self.button2 = QPushButton(SFMTEXT60)
         self.button2.clicked.connect(self.fbutton2)
         grid.addWidget(self.button2, 4, 2, 1, 2, Qt.AlignmentFlag.AlignCenter)
         #
@@ -2496,18 +2516,18 @@ class copyItems2():
             self.button2.setEnabled(False)
             # something happened with some items
             if len(aa) == 4 and aa[3] != "":
-                MyMessageBox("Info", "Something happened with some items", "", aa[3], self.window)
+                MyMessageBox(SFMINFO, SFMINFO3, "", aa[3], self.window)
         # operation interrupted by the user
         elif aa[0] == "Cancelled":
-            self.label1.setText("Cancelled.", self.mydialog.size().width()-12)
-            self.label2.setText("Items: {}/{}".format(self.numItemProc,self.numItemList))
+            self.label1.setText(SFMTEXT197, self.mydialog.size().width()-12)
+            self.label2.setText(SFMTEXT198+" {}/{}".format(self.numItemProc,self.numItemList))
             self.pb.setValue(int(self.numItemProc/self.numItemList*100))
             # change the button state
             self.button1.setEnabled(True)
             self.button2.setEnabled(False)
             # something happened with some items
             if len(aa) == 4 and aa[3] != "":
-                MyMessageBox("Info", "Something happened with some items", "", aa[3], self.window)
+                MyMessageBox(SFMINFO, SFMINFO3, "", aa[3], self.window)
     
     def fbutton1(self):
         self.mydialog.close()
@@ -2522,7 +2542,7 @@ class passWord(QDialog):
     def __init__(self, ppath, ttype, parent):
         super(passWord, self).__init__(parent)
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
-        self.setWindowTitle("Password")
+        self.setWindowTitle(SFMTEXT199)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.resize(dialWidth,100)
@@ -2533,10 +2553,10 @@ class passWord(QDialog):
         mbox = QBoxLayout(QBoxLayout.Direction.TopToBottom)
         mbox.setContentsMargins(5,5,5,5)
         # label
-        self.label = QLabel("Enter The Password:")
+        self.label = QLabel(SFMTEXT200)
         mbox.addWidget(self.label)
         # checkbox
-        self.ckb = QCheckBox("Hide/Show the password")
+        self.ckb = QCheckBox(SFMTEXT201)
         self.ckb.setChecked(True)
         self.ckb.toggled.connect(self.on_checked)
         mbox.addWidget(self.ckb)
@@ -2549,10 +2569,10 @@ class passWord(QDialog):
         button_box.setContentsMargins(0,0,0,0)
         mbox.addLayout(button_box)
         #
-        button_ok = QPushButton("     Accept     ")
+        button_ok = QPushButton(SFMTEXT202)
         button_box.addWidget(button_ok)
         #
-        button_close = QPushButton("     Cancel     ")
+        button_close = QPushButton(SFMTEXT203)
         button_box.addWidget(button_close)
         #
         self.setLayout(mbox)
@@ -2887,7 +2907,7 @@ class MyQlist(QListView):
                     # ifile.write(self.model().rootPath())
                     # ifile.close()
                 # except Exception as E:
-                    # MyDialog("Error", str(E), None)
+                    # MyDialog(SFMERROR, str(E), None)
                     # event.ignore()
                 #
             if ddata[0] == "R":
@@ -2915,7 +2935,7 @@ class MyQlist(QListView):
         dest_path = self.model().rootPath()
         curr_dir = QFileInfo(dest_path)
         if not curr_dir.isWritable():
-            MyDialog("Info", "The current folder is not writable: "+os.path.basename(dest_path), None)
+            MyDialog(SFMINFO, SFMINFO4+os.path.basename(dest_path), None)
             event.ignore()
             return
         if event.mimeData().hasUrls():
@@ -2946,7 +2966,7 @@ class MyQlist(QListView):
                             if os.access(ifp, os.W_OK):
                                 path_to_store = ifp
                             else:
-                                MyDialog("Info", "The following folder in not writable: "+os.path.basename(ifp), None)
+                                MyDialog(SFMINFO, SFMINFO5+os.path.basename(ifp), None)
                                 event.ignore()
                                 return
                     #
@@ -2964,16 +2984,16 @@ class MyQlist(QListView):
                                 ff.write(data_req)
                         else:
                             event.ignore()
-                            MyDialog("Info", "No data.", None)
+                            MyDialog(SFMINFO, SFMINFO6, None)
                             return
                     else:
                         event.ignore()
-                        MyDialog("Info", "Not supported.", None)
+                        MyDialog(SFMINFO, SFMINFO7, None)
                         return
                 #
                 else:
                     event.ignore()
-                    MyDialog("Info", "Not supported.", None)
+                    MyDialog(SFMINFO, SFMINFO7, None)
                     return
             #
             filePaths = filePathsTemp
@@ -2997,19 +3017,19 @@ class MyQlist(QListView):
                         #
                         menu = QMenu("Menu", self)
                         #
-                        copyAction = QAction("Copy", self)
+                        copyAction = QAction(SFMTEXT70, self)
                         copyAction.uaction = "copy"
                         copyAction.triggered.connect(self.fdragdrop)
                         menu.addAction(copyAction)
                         #
-                        moveAction = QAction("Move", self)
+                        moveAction = QAction(SFMTEXT71, self)
                         moveAction.uaction = "move"
                         moveAction.triggered.connect(self.fdragdrop)
                         menu.addAction(moveAction)
                         #
                         menu.addSeparator()
                         #
-                        cancelAction = QAction("Cancel", self)
+                        cancelAction = QAction(SFMTEXT72, self)
                         cancelAction.uaction = "cancel"
                         cancelAction.triggered.connect(self.fdragdrop)
                         menu.addAction(cancelAction)
@@ -3030,14 +3050,14 @@ class MyQlist(QListView):
                                 PastenMerge(ifp, _event_action, filePaths, None)
                                 return
                             else:
-                                MyDialog("Info", "The following folder in not writable: "+os.path.basename(ifp), None)
+                                MyDialog(SFMINFO, SFMINFO5+os.path.basename(ifp), None)
                                 return
                     #
                     if os.path.isdir(ifp):
                         if os.access(ifp, os.W_OK):
                             PastenMerge(ifp, event_action, filePaths, None)
                         else:
-                            MyDialog("Info", "The following folder in not writable: "+os.path.basename(ifp), None)
+                            MyDialog(SFMINFO, SFMINFO5+os.path.basename(ifp), None)
                             return
                     # not folder
                     else:
@@ -3394,14 +3414,14 @@ class MainWin(QWidget):
         hbtn = QPushButton(QIcon.fromTheme("user-home"), None)
         if TOOLBAR_BUTTON_SIZE:
             hbtn.setIconSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE))
-        hbtn.setToolTip("Home")
+        hbtn.setToolTip(SFMTEXT80)
         hbtn.clicked.connect(lambda:self.openDir(HOME, 1))
         self.obox1.addWidget(hbtn, 0, Qt.AlignmentFlag.AlignLeft)
         # root button
         rootbtn = QPushButton(QIcon.fromTheme("computer"), None)
         if TOOLBAR_BUTTON_SIZE:
             rootbtn.setIconSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE))
-        rootbtn.setToolTip("Computer")
+        rootbtn.setToolTip(SFMTEXT81)
         rootbtn.clicked.connect(lambda:self.openDir("/", 1))
         self.obox1.addWidget(rootbtn, 0, Qt.AlignmentFlag.AlignLeft)
         #
@@ -3421,7 +3441,7 @@ class MainWin(QWidget):
             self.tbtn = QPushButton(QIcon.fromTheme("user-trash"), None)
             if TOOLBAR_BUTTON_SIZE:
                 self.tbtn.setIconSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE))
-            self.tbtn.setToolTip("Recycle Bin")
+            self.tbtn.setToolTip(SFMTEXT82)
             self.obox1.addWidget(self.tbtn, 0, Qt.AlignmentFlag.AlignLeft)
             if not isXDGDATAHOME:
                 self.tbtn.setEnabled(False)
@@ -3441,7 +3461,7 @@ class MainWin(QWidget):
             altBtn = QPushButton(QIcon("icons/alternate.svg"), "")
             if TOOLBAR_BUTTON_SIZE:
                 altBtn.setIconSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE))
-            altBtn.setToolTip("Alternate view")
+            altBtn.setToolTip(SFMTEXT83)
             altBtn.clicked.connect(self.faltview)
             self.obox1.addWidget(altBtn, 0, Qt.AlignmentFlag.AlignLeft)
         #
@@ -3481,7 +3501,7 @@ class MainWin(QWidget):
         qbtn = QPushButton(QIcon.fromTheme("window-close"), "")
         if BUTTON_SIZE:
             qbtn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
-        qbtn.setToolTip("Exit")
+        qbtn.setToolTip(SFMTEXT84)
         qbtn.clicked.connect(self.close)
         self.obox1.addWidget(qbtn, 1, Qt.AlignmentFlag.AlignRight)
         ####
@@ -3501,7 +3521,7 @@ class MainWin(QWidget):
                         el.ModuleCustom(self)
                         list_custom_modules.remove(el)
                     except Exception as E:
-                        MyDialog("Error", str(E), self)
+                        MyDialog(SFMERROR, str(E), self)
         ####
         # for closing open tabs
         self.device_mountPoint = []
@@ -3737,7 +3757,7 @@ class MainWin(QWidget):
         if mountpoint == "N":
             ret = self.mount_device(mountpoint, ddevice)
             if ret == -1:
-                MyDialog("Info", "The device cannot be mounted.", self)
+                MyDialog(SFMINFO, SFMINFO8, self)
                 return "N"
             else:
                 mountpoint = ret
@@ -3766,13 +3786,13 @@ class MainWin(QWidget):
         if mountpoint == "N":
             ret = self.on_mount_device(ddevice, 'Mount')
             if ret == -1:
-                MyDialog("Info", "The device cannot be mounted.", self)
+                MyDialog(SFMINFO, SFMINFO8, self)
                 return 
         else:
             ret = self.on_mount_device(ddevice, 'Unmount')
             if ret == -1:
-                # MyDialog("Info", "The device cannot be unmounted.", self)
-                MyDialog("Info", "Device busy.", self)
+                # MyDialog(SFMINFO, SFMINFO8, self)
+                MyDialog(SFMINFO, SFMINFO9, self)
                 return -1
             # close the open tabs
             if ret == None:
@@ -3802,7 +3822,7 @@ class MainWin(QWidget):
         if mountpoint != "N":
             ret = self.mount_device(mountpoint, ddevice)
             if ret == -1:
-                # MyDialog("Info", "Device busy.", self)
+                # MyDialog(SFMINFO, SFMINFO9, self)
                 return
         # 
         bd2 = self.bus.get_object('org.freedesktop.UDisks2', ddrive)
@@ -3810,14 +3830,14 @@ class MainWin(QWidget):
         # 
         ret = self.on_eject(ddrive)
         if ret == -1:
-            MyDialog("Info", "The device cannot be ejected.", self)
+            MyDialog(SFMINFO, SFMINF10, self)
             return
         # do not turn the usb cd reader off
         if can_poweroff and _type != 1:
             try:
                 ret = self.on_poweroff(ddrive)
                 # if ret == -1:
-                    # MyDialog("Info", "The device cannot be turned off.", self)
+                    # MyDialog(SFMINFO, SFMINF11, self)
             except:
                 pass
         # # close the open tabs
@@ -3901,17 +3921,17 @@ class MainWin(QWidget):
                 media_type = "N"
         #
         if not label:
-            label = "(Not set)"
+            label = SFMTEXT90
         if mountpoint == "N":
-            mountpoint = "(Not mounted)"
+            mountpoint = SFMTEXT91
             device_size = str(convert_size(size))
         else:
             mountpoint_size = convert_size(psutil.disk_usage(mountpoint).used)
             device_size = str(convert_size(size))+" - ("+mountpoint_size+")"
         if not vendor:
-            vendor = "(None)"
+            vendor = SFMTEXT92
         if not model:
-            model = "(None)"
+            model = SFMTEXT92
         data = [label, vendor, model, device_size, file_system, bool(read_only), mountpoint, ddevice, media_type]
         devicePropertyDialog(data, self)
         
@@ -3935,7 +3955,7 @@ class MainWin(QWidget):
     def showEvent(self, event):
         if self._lvFile:
             if not os.path.exists(self._lvFile):
-                MyDialog("Error", "Cannot be found:\n{}".format(self._lvFile), self)
+                MyDialog(SFMERROR, "{}\n{}".format(SFMERROR10, self._lvFile), self)
                 self._lvFile = None
             # else:
                 # self._scroll_listview.selectionModel().select(self._scroll_idx, QItemSelectionModel.SelectionFlag.Select)
@@ -3969,7 +3989,7 @@ class MainWin(QWidget):
                     ifile.write("{};{};False".format(new_w, new_h))
                 ifile.close()
             except Exception as E:
-                MyDialog("Error", str(E), self)
+                MyDialog(SFMERROR, str(E), self)
         QApplication.instance().quit()
     
     
@@ -3993,7 +4013,7 @@ class MainWin(QWidget):
             baction = self.bookmarkBtnMenu.addAction(os.path.basename(path), self.on_bookmark_action)
             baction.setToolTip(path)
         except Exception as E:
-            MyDialog("Error", str(E), self)
+            MyDialog(SFMERROR, str(E), self)
     
     # remove the bookmark
     def unsetBtnBookmarks(self, path):
@@ -4011,7 +4031,7 @@ class MainWin(QWidget):
                     self.bookmarkBtnMenu.removeAction(iitem)
                     break
         except Exception as E:
-            MyDialog("Error", str(E), self)
+            MyDialog(SFMERROR, str(E), self)
     
     # the bookmark action - or remove the useless bookmark
     def on_bookmark_action(self):
@@ -4022,8 +4042,8 @@ class MainWin(QWidget):
         else:
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Icon.Question)
-            msgBox.setWindowTitle("Question")
-            msgtext = "The folder\n{}\ndoesn't exist anymore.\nDo you want to remove its bookmark?".format(bpath)
+            msgBox.setWindowTitle(SFMQUESTION)
+            msgtext = "{}\n{}".format(SFMTEXT93, bpath)
             msgBox.setText(msgtext)
             msgBox.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
             #
@@ -4034,7 +4054,7 @@ class MainWin(QWidget):
                     fbdata = fb.readlines()
                     fb.close()
                 except Exception as E:
-                    MyDialog("Error", str(E), self)
+                    MyDialog(SFMERROR, str(E), self)
                     return
                 # remove the bookmark
                 for item in fbdata[:]:
@@ -4049,7 +4069,7 @@ class MainWin(QWidget):
                         fb.write(item)
                     fb.close()
                 except Exception as E:
-                    MyDialog("Error", str(E), self)
+                    MyDialog(SFMERROR, str(E), self)
                     return
             else:
                 return
@@ -4123,7 +4143,7 @@ class devicePropertyDialog(QDialog):
     def __init__(self, data, parent):
         super(devicePropertyDialog, self).__init__(parent)
         self.setWindowIcon(QIcon("icons/file-manager-red.svg"))
-        self.setWindowTitle("Device Properties")
+        self.setWindowTitle(SFMTEXT94)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.resize(dialWidth,100)
@@ -4133,52 +4153,52 @@ class devicePropertyDialog(QDialog):
         grid = QGridLayout()
         grid.setContentsMargins(5,5,5,5)
         #
-        label0 = QLabel("<i>Label</i>")
+        label0 = QLabel(SFMTEXT95)
         grid.addWidget(label0, 1, 0, Qt.AlignmentFlag.AlignLeft)
         label0_data = QLabel(data[0])
         grid.addWidget(label0_data, 1, 1, Qt.AlignmentFlag.AlignLeft)
         #
-        label1 = QLabel("<i>Vendor</i>")
+        label1 = QLabel(SFMTEXT96)
         grid.addWidget(label1, 2, 0, Qt.AlignmentFlag.AlignLeft)
         label1_data = QLabel(data[1])
         grid.addWidget(label1_data, 2, 1, Qt.AlignmentFlag.AlignLeft)
         #
-        label2 = QLabel("<i>Model</i>")
+        label2 = QLabel(SFMTEXT97)
         grid.addWidget(label2, 3, 0, Qt.AlignmentFlag.AlignLeft)
         label2_data = QLabel(data[2])
         grid.addWidget(label2_data, 3, 1, Qt.AlignmentFlag.AlignLeft)
         #
-        label3 = QLabel("<i>Size (Used)</i>")
+        label3 = QLabel(SFMTEXT98)
         grid.addWidget(label3, 4, 0, Qt.AlignmentFlag.AlignLeft)
         label3_data = QLabel(data[3])
         grid.addWidget(label3_data, 4, 1, Qt.AlignmentFlag.AlignLeft)
         #
-        label4 = QLabel("<i>File System</i>")
+        label4 = QLabel(SFMTEXT99)
         grid.addWidget(label4, 5, 0, Qt.AlignmentFlag.AlignLeft)
         label4_data = QLabel(data[4])
         grid.addWidget(label4_data, 5, 1, Qt.AlignmentFlag.AlignLeft)
         #
-        label5 = QLabel("<i>Read Only</i>")
+        label5 = QLabel(SFMTEXT100)
         grid.addWidget(label5, 6, 0, Qt.AlignmentFlag.AlignLeft)
         label5_data = QLabel(str(data[5]))
         grid.addWidget(label5_data, 6, 1, Qt.AlignmentFlag.AlignLeft)
         #
-        label6 = QLabel("<i>Mount Point</i>")
+        label6 = QLabel(SFMTEXT101)
         grid.addWidget(label6, 7, 0, Qt.AlignmentFlag.AlignLeft)
         label6_data = QLabel(data[6])
         grid.addWidget(label6_data, 7, 1, Qt.AlignmentFlag.AlignLeft)
         #
-        label7 = QLabel("<i>Device</i>")
+        label7 = QLabel(SFMTEXT102)
         grid.addWidget(label7, 8, 0, Qt.AlignmentFlag.AlignLeft)
         label7_data = QLabel(data[7])
         grid.addWidget(label7_data, 8, 1, Qt.AlignmentFlag.AlignLeft)
         #
-        label8 = QLabel("<i>Media Type</i>")
+        label8 = QLabel(SFMTEXT103)
         grid.addWidget(label8, 9, 0, Qt.AlignmentFlag.AlignLeft)
         label8_data = QLabel(data[8])
         grid.addWidget(label8_data, 9, 1, Qt.AlignmentFlag.AlignLeft)
         #
-        button_ok = QPushButton("     Ok     ")
+        button_ok = QPushButton(SFMTEXT104)
         grid.addWidget(button_ok, 12, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter)
         self.setLayout(grid)
         button_ok.clicked.connect(self.close)
@@ -4315,7 +4335,7 @@ def _flaunch_prog(r_defApp, path, USE_TERM):
                     break
         # 
         if _has_arg == 2:
-            MyDialog("Info", "Cannot open the file this way:\n{}.".format(r_defApp), None) 
+            MyDialog(SFMINFO, "{}\n{}.".format(SFMINF12, r_defApp), None) 
             return
         elif _has_arg == 0:
             r_defApp.append(path)
@@ -4325,7 +4345,7 @@ def _flaunch_prog(r_defApp, path, USE_TERM):
         else:
             subprocess.Popen(r_defApp)
     except Exception as E:
-        MyDialog("Error", str(E), None)        
+        MyDialog(SFMERROR, str(E), None)        
 
 
 class LView(QBoxLayout):
@@ -4360,7 +4380,7 @@ class LView(QBoxLayout):
         #
         # button change history/scroll
         self.change_btn = QPushButton(QIcon("icons/alternate.svg"), "")
-        self.change_btn.setToolTip("Switch history/buttons")
+        self.change_btn.setToolTip(SFMTEXT110)
         if BUTTON_SIZE:
             self.change_btn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
         self.change_btn.setCheckable(True)
@@ -4369,12 +4389,12 @@ class LView(QBoxLayout):
         #
         _step = 30
         self.buttonbar_left_btn = QPushButton(QIcon("icons/go-previous-symbolic.svg"), "")
-        self.buttonbar_left_btn.setToolTip("Scroll to left")
+        self.buttonbar_left_btn.setToolTip(SFMTEXT111)
         self.buttonbar_left_btn.clicked.connect(lambda:self.on_buttonbar_action(-1*_step))
         self.bhicombo.addWidget(self.buttonbar_left_btn)
         #
         self.buttonbar_right_btn = QPushButton(QIcon("icons/go-next-symbolic.svg"), "")
-        self.buttonbar_right_btn.setToolTip("Scroll to right")
+        self.buttonbar_right_btn.setToolTip(SFMTEXT112)
         self.buttonbar_right_btn.clicked.connect(lambda:self.on_buttonbar_action(_step))
         self.bhicombo.addWidget(self.buttonbar_right_btn)
         if BUTTON_SIZE:
@@ -4552,7 +4572,7 @@ class LView(QBoxLayout):
                 self.listview.scrollTo(index, QAbstractItemView.ScrollHint.EnsureVisible)
                 #
                 # if not os.path.exists(self.lvFile):
-                    # MyDialog("Error", "Cannot be found:\n{}".format(self.lvFile), self.window)
+                    # MyDialog(SFMERROR, "Cannot be found:\n{}".format(self.lvFile), self.window)
                 #
                 self.lvFile = None
             return
@@ -4624,10 +4644,10 @@ class LView(QBoxLayout):
                 self._pp = 2
                 return 1
             except Exception as E:
-                MyDialog("Error", str(E), self.window)
+                MyDialog(SFMERROR, str(E), self.window)
                 return -1
         else:
-            MyDialog("Error", path+"\n\n   Not readable", self.window)
+            MyDialog(SFMERROR, path+SFMTEXT113, self.window)
             return 0
     
     # see on_box_pb
@@ -4648,7 +4668,7 @@ class LView(QBoxLayout):
             # if new_path != self.lvDir:
                 # self.on_btn_change_dir(new_path)
         # else:
-            # MyDialog("Info", "The folder \n{}\ndoes not exist.".format(new_path), self.window)
+            # MyDialog(SFMINFO, "The folder \n{}\ndoes not exist.".format(new_path), self.window)
         #
         if new_path != self.lvDir:
             self.on_btn_change_dir(new_path)
@@ -4667,7 +4687,7 @@ class LView(QBoxLayout):
                 self.box_pb_btn.setChecked(True)
         else:
             self.box_pb_btn.setChecked(True)
-            MyDialog("Info", "The folder \n{}\ndoes not exist.".format(new_path), self.window)
+            MyDialog(SFMINFO, "{}:\n{}".format(SFMTEXT114, new_path), self.window)
     
     # populate the path buttons box
     def on_box_pb(self, ddir):
@@ -4726,7 +4746,7 @@ class LView(QBoxLayout):
                 self.window.openDir(path, 1)
                 return
         #
-        MyDialog("Error", "Folder not readable", self.window)
+        MyDialog(SFMERROR, SFMERROR12, self.window)
     
     #
     def eventFilter(self, obj, event):
@@ -4778,9 +4798,9 @@ class LView(QBoxLayout):
                             # open the selected folder in a new tab
                             self.fnewtabAction(new_path, 1)
                         except Exception as E:
-                            MyDialog("Error", str(E), self.window)
+                            MyDialog(SFMERROR, str(E), self.window)
                     else:
-                        MyDialog("Info", "The folder \n{}\ndoes not exist.".format(new_path), self.window)
+                        MyDialog(SFMINFO, "{}:\n{}".format(SFMTEXT114, new_path), self.window)
                     #
                     return QObject.event(obj, event)
                 # else:
@@ -4796,7 +4816,7 @@ class LView(QBoxLayout):
                                         # # open the selected folder in a new tab
                                         # self.fnewtabAction(itemSelectedPath, 1)
                                     # except Exception as E:
-                                        # MyDialog("Error", str(E), self.window)
+                                        # MyDialog(SFMERROR, str(E), self.window)
                                 # else:
                                     # # open the selected folder in the same tab
                                     # try:
@@ -4817,9 +4837,9 @@ class LView(QBoxLayout):
                                         # # self.on_box_pb(self.lvDir)
                                         # self._pp = 1
                                     # except Exception as E:
-                                        # MyDialog("Error", str(E), self.window)
+                                        # MyDialog(SFMERROR, str(E), self.window)
                             # else:
-                                # MyDialog("Info", itemSelected+"\nNot readable", self.window)
+                                # MyDialog(SFMINFO, itemSelected+"\nNot readable", self.window)
         #
         return QObject.event(obj, event)
 
@@ -4849,16 +4869,16 @@ class LView(QBoxLayout):
     # status bar - current folder content
     def tabLabels(self):
         if not os.path.exists(self.lvDir):
-            self.label2.setText("<i>Unreadable</i>")
+            self.label2.setText(SFMTEXT120)
             self.label6.setText("")
             self.label3.setText("")
             self.label7.setText("")
             self.label8.setText("")
         else:
-            self.label2.setText("<i>Items </i>")
+            self.label2.setText(SFMTEXT121)
             num_items, hidd_items = self.num_itemh(self.lvDir)
             self.label6.setText(str(num_items)+"    ")
-            self.label3.setText("<i>Hiddens </i>")
+            self.label3.setText(SFMTEXT122)
             self.label7.setText(str(hidd_items))
             self.label8.setText("")
     
@@ -4879,7 +4899,7 @@ class LView(QBoxLayout):
         if BUTTON_SIZE:
             upbtn.setIconSize(QSize(BUTTON_SIZE, BUTTON_SIZE))
         # upbtn.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-        upbtn.setToolTip("go up")
+        upbtn.setToolTip(SFMTEXT123)
         upbtn.clicked.connect(self.upButton)
         self.bhicombo.addWidget(upbtn)
         #
@@ -4889,7 +4909,7 @@ class LView(QBoxLayout):
         invbtn.setIcon(QIcon(QPixmap("icons/invert.svg")))
         # invbtn.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         invbtn.clicked.connect(self.finvbtn)
-        invbtn.setToolTip("Invert the selection")
+        invbtn.setToolTip(SFMTEXT124)
         self.bhicombo.addWidget(invbtn)
         #
         self.hidbtn = QPushButton()
@@ -4899,7 +4919,7 @@ class LView(QBoxLayout):
         self.hidbtn.setIcon(QIcon(QPixmap("icons/hidden.svg")))
         # self.hidbtn.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         self.hidbtn.clicked.connect(self.fhidbtn)
-        self.hidbtn.setToolTip("Show the hidden Items")
+        self.hidbtn.setToolTip(SFMTEXT125)
         self.bhicombo.addWidget(self.hidbtn)
         # status box
         hboxd = QBoxLayout(QBoxLayout.Direction.LeftToRight)
@@ -4936,27 +4956,27 @@ class LView(QBoxLayout):
                 if os.access(real_path, os.R_OK):
                     self.label6.setText(convert_size(file_info.size())+"    ")
                 else:
-                    self.label6.setText("(Not readable)"+"    ")
+                    self.label6.setText(SFMTEXT126+"    ")
             elif os.path.isdir(real_path):
                 if os.access(real_path, os.R_OK):
                     # self.label6.setText(str(QDir(path).count()-2))
                     num_items, hidd_items = self.num_itemh(real_path)
-                    self.label2.setText("<i>Items </i>")
+                    self.label2.setText(SFMTEXT121)
                     self.label6.setText(str(num_items)+"    ")
-                    self.label3.setText("<i>Hiddens </i>")
+                    self.label3.setText(SFMTEXT122)
                     self.label7.setText(str(hidd_items))
                 else:
-                    self.label6.setText("(Not readable)"+"    ")
+                    self.label6.setText(SFMTEXT126+"    ")
             # link - broken link
             real_path_short = real_path
             if len(real_path) > 50:
                 real_path_short = real_path[0:23]+"..."+real_path[-24:]
             if not os.path.exists(real_path):
                 # self.label8.setText("Broken link to: {}".format(real_path_short))
-                self.label8.setText("Broken link")
+                self.label8.setText(SFMTEXT127)
             else:
                 # self.label8.setText("<i>&nbsp;&nbsp;&nbsp;&nbsp;Link to</i>: {}".format(real_path_short))
-                self.label8.setText("<i>&nbsp;&nbsp;&nbsp;&nbsp;Link type</i>")
+                self.label8.setText(SFMTEXT128)
         elif os.path.isfile(path):
             # mimetype
             imime = QMimeDatabase().mimeTypeForFile(path, QMimeDatabase.MatchMode.MatchDefault)
@@ -4965,7 +4985,7 @@ class LView(QBoxLayout):
             if os.access(path, os.R_OK):
                 self.label6.setText(convert_size(file_info.size())+"    ")
             else:
-                self.label6.setText("(Not readable)"+"    ")
+                self.label6.setText(SFMTEXT126+"    ")
         elif os.path.isdir(path):
             # mimetype
             imime = QMimeDatabase().mimeTypeForFile(path, QMimeDatabase.MatchMode.MatchDefault)
@@ -4973,12 +4993,12 @@ class LView(QBoxLayout):
             # item count
             if os.access(path, os.R_OK):
                 num_items, hidd_items = self.num_itemh(path)
-                self.label2.setText("<i>Items </i>")
+                self.label2.setText(SFMTEXT121)
                 self.label6.setText(str(num_items)+"    ")
-                self.label3.setText("<i>Hiddens </i>")
+                self.label3.setText(SFMTEXT122)
                 self.label7.setText(str(hidd_items))
             else:
-                self.label6.setText("(Not readable)"+"    ")
+                self.label6.setText(SFMTEXT126+"    ")
         else:
             try:
                 # mimetype
@@ -4992,7 +5012,7 @@ class LView(QBoxLayout):
     def doubleClick(self, index):
         path = self.fileModel.fileInfo(index).absoluteFilePath()
         if not os.path.exists(path):
-            MyDialog("Info", "It doesn't exist.", self.window)
+            MyDialog(SFMINFO, SFMINF14, self.window)
             return
         if os.path.isdir(path):
             if os.access(path, os.R_OK):
@@ -5013,10 +5033,10 @@ class LView(QBoxLayout):
                     #
                     self._pp = 1
                 except Exception as E:
-                    MyDialog("Error", str(E), self.window)
+                    MyDialog(SFMERROR, str(E), self.window)
                     self._pp = 0
             else:
-                MyDialog("Info", path+"\n\n   Not readable", self.window)
+                MyDialog(SFMINFO, path+SFMTEXT113, self.window)
         #
         elif os.path.isfile(path):
             perms = QFileInfo(path).permissions()
@@ -5047,7 +5067,7 @@ class LView(QBoxLayout):
                                 _de_found = 1
                                 break
                     if _de_found == 0:
-                        MyDialog("Info", "Cannot execute this file.", self.window)
+                        MyDialog(SFMINFO, SFMINF16, self.window)
                         return
                     #
                     progExec = DesktopEntry(path).getExec()
@@ -5066,7 +5086,7 @@ class LView(QBoxLayout):
                                 pass
                             #
                             if not TTERM:
-                                MyDialog("Info", "No terminal found or setted.", self.window)
+                                MyDialog(SFMINFO, SFMINF17, self.window)
                                 return
                             #
                             try:
@@ -5076,7 +5096,7 @@ class LView(QBoxLayout):
                                 # else
                                 subprocess.Popen([TTERM, "-e", progExec])
                             except Exception as E:
-                                MyDialog("Error", str(E), self.window)
+                                MyDialog(SFMERROR, str(E), self.window)
                         else:
                             try:
                                 if progPath:
@@ -5085,9 +5105,9 @@ class LView(QBoxLayout):
                                 # else:
                                 subprocess.Popen([progExec])
                             except Exception as E:
-                                MyDialog("Error", str(E), self.window)
+                                MyDialog(SFMERROR, str(E), self.window)
                     else:
-                        MyDialog("Info", "{} not found.".format(progExec), self.window)
+                        MyDialog(SFMINFO, "{} {}.".format(progExec, SFMTEXT204), self.window)
                     return
             #
             if (perms & QFile.Permission.ExeOwner):
@@ -5101,7 +5121,7 @@ class LView(QBoxLayout):
                     try:
                         subprocess.Popen(path, shell=False, cwd=os.path.dirname(path))
                     except Exception as E:
-                        MyDialog("Error", str(E), self.window)
+                        MyDialog(SFMERROR, str(E), self.window)
                     finally:
                         return
                 elif ret == -1:
@@ -5128,7 +5148,7 @@ class LView(QBoxLayout):
                 # self._flaunch_prog(r_defApp, path, USE_TERM)
                 _flaunch_prog(r_defApp, path, USE_TERM)
             else:
-                MyDialog("Info", "No programs found.", self.window)
+                MyDialog(SFMINFO, SFMINF19, self.window)
     
     # # function for executing the command
     # def _flaunch_prog(self, r_defApp, path, USE_TERM):
@@ -5156,7 +5176,7 @@ class LView(QBoxLayout):
             # else:
                 # subprocess.Popen(r_defApp)
         # except Exception as E:
-            # MyDialog("Error", str(E), self.window)
+            # MyDialog(SFMERROR, str(E), self.window)
     
     #
     def lselectionChanged(self):
@@ -5164,7 +5184,7 @@ class LView(QBoxLayout):
         if self.selection == []:
             self.tabLabels()
         else:
-            self.label2.setText("<i>Selected Items </i>")
+            self.label2.setText(SFMTEXT130)
             self.label6.setText(str(len(self.selection)))
             self.label3.setText("")
             self.label7.setText("")
@@ -5245,13 +5265,13 @@ class LView(QBoxLayout):
                 ipath = ""
             if not os.path.exists(ipath):
                 if not os.path.islink(ipath):
-                    MyDialog("Info", "It doesn't exist.", self.window)
+                    MyDialog(SFMINFO, SFMINF14, self.window)
                     return
             #
             if self.selection != None:
                 if len(self.selection) == 1:
                     if os.path.isfile(os.path.join(self.lvDir, itemName)):
-                        subm_openwithAction= menu.addMenu("Open with...")
+                        subm_openwithAction= menu.addMenu(SFMTEXT131)
                         listPrograms = getAppsByMime(os.path.join(self.lvDir, itemName)).appByMime()
                         #
                         ii = 0
@@ -5274,9 +5294,9 @@ class LView(QBoxLayout):
                                 if iprog[0] == defApp:
                                     # # progActionList.insert(0, QAction("{} - {} (Default)".format(os.path.basename(iprog), listPrograms[ii+1]), self))
                                     # progActionList.insert(0, QAction("{} (Default)".format(listPrograms[ii+1]), self))
-                                    prog_str = "{} (Default)".format(iprog[1])
+                                    prog_str = "{} {}".format(iprog[1], SFMTEXT205)
                                     if USE_TERM:
-                                        prog_str = "{} (Default - terminal)".format(iprog[1])
+                                        prog_str = "{} {}".format(iprog[1], SFMTEXT206)
                                     progActionList.insert(0, QAction(prog_str, self))
                                     # progActionList.insert(1, iprog[0])
                                     progActionList.insert(1, iprog)
@@ -5285,7 +5305,7 @@ class LView(QBoxLayout):
                                     # progActionList.append(QAction("{}".format(listPrograms[ii+1]), self))
                                     prog_str = "{}".format(iprog[1])
                                     if USE_TERM:
-                                        prog_str = "{} (terminal)".format(iprog[1])
+                                        prog_str = "{} {}".format(iprog[1], SFMTEXT207)
                                     progActionList.append(QAction(prog_str, self))
                                     # progActionList.append(iprog[0])
                                     progActionList.append(iprog)
@@ -5296,29 +5316,29 @@ class LView(QBoxLayout):
                                 subm_openwithAction.addAction(paction)
                                 ii += 2
                         subm_openwithAction.addSeparator()
-                        otherAction = QAction("Other Program")
+                        otherAction = QAction(SFMTEXT132)
                         otherAction.triggered.connect(lambda:self.fotherAction(os.path.join(self.lvDir, itemName)))
                         subm_openwithAction.addAction(otherAction)
                         #
                         menu.addSeparator()
                     elif os.path.isdir(os.path.join(self.lvDir, itemName)):
-                        newtabAction = QAction("Open in a new tab")
+                        newtabAction = QAction(SFMTEXT133)
                         newtabAction.triggered.connect(lambda:self.fnewtabAction(os.path.join(self.lvDir, itemName), self.flag))
                         menu.addAction(newtabAction)
                         menu.addSeparator()
             #
-            copyAction = QAction("Copy", self)
+            copyAction = QAction(SFMTEXT136, self)
             copyAction.triggered.connect(lambda:self.fcopycutAction("copy"))
             menu.addAction(copyAction)
             #
             if self.flag == 1 or self.flag == 3:
-                copyAction = QAction("Cut", self)
+                copyAction = QAction(SFMTEXT134, self)
                 copyAction.triggered.connect(lambda:self.fcopycutAction("cut"))
                 menu.addAction(copyAction)
             # can paste into the hovered directory
             if os.path.isdir(os.path.join(self.lvDir, itemName)):
                 if self.flag == 1 or self.flag == 3:
-                    pasteNmergeAction = QAction("Paste", self)
+                    pasteNmergeAction = QAction(SFMTEXT135, self)
                     pasteNmergeAction.triggered.connect(lambda d:PastenMerge(os.path.join(self.lvDir, itemName), -3, "", self.window))
                     menu.addAction(pasteNmergeAction)
                     # check the clipboard for data
@@ -5333,21 +5353,21 @@ class LView(QBoxLayout):
                 if self.lvDir[0:len_home] == os.path.expanduser("~") or self.flag in [3,4]:
                     if self.flag == 1 or self.flag == 3:
                         if isXDGDATAHOME:
-                            trashAction = QAction("Trash", self)
+                            trashAction = QAction(SFMTEXT137, self)
                             trashAction.triggered.connect(self.ftrashAction)
                             menu.addAction(trashAction)
             #
             # delete function
             if USE_DELETE:
                 if self.flag == 1 or self.flag == 3:
-                    deleteAction = QAction("Delete", self)
+                    deleteAction = QAction(SFMTEXT138, self)
                     deleteAction.triggered.connect(self.fdeleteAction)
                     menu.addAction(deleteAction)
             #
             if self.flag == 1 or self.flag == 3:
                 if self.selection and len(self.selection) == 1:
                     menu.addSeparator()
-                    renameAction = QAction("Rename", self)
+                    renameAction = QAction(SFMTEXT139, self)
                     renameAction.triggered.connect(lambda:self.frenameAction(ipath))
                     menu.addAction(renameAction)
             #
@@ -5381,7 +5401,7 @@ class LView(QBoxLayout):
             ## populate
             if len(list_custom_modules) > 0:
                 menu.addSeparator()
-                subm_customAction = menu.addMenu("Actions")
+                subm_customAction = menu.addMenu(SFMTEXT140)
                 listActions = []
                 for el in list_custom_modules:
                     if el.mmodule_type(self) == 1 and self.selection and len(self.selection) == 1:
@@ -5416,22 +5436,22 @@ class LView(QBoxLayout):
                 with open("Bookmarks", "r") as fb:
                     fbdata = fb.readlines()
                 if ipath+"\n" in fbdata:
-                    baction = QAction("Remove Bookmark", self)
+                    baction = QAction(SFMTEXT141, self)
                     baction.triggered.connect(lambda:self.window.unsetBtnBookmarks(ipath))
                     menu.addAction(baction)
                 else:
-                    baction = QAction("Add Bookmark", self)
+                    baction = QAction(SFMTEXT142, self)
                     baction.triggered.connect(lambda:self.window.setBtnBookmarks(ipath))
                     menu.addAction(baction)
             #
             menu.addSeparator()
             if self.selection and len(self.selection) == 1:
-                propertyAction = QAction("Property", self)
+                propertyAction = QAction(SFMTEXT143, self)
                 propertyAction.triggered.connect(lambda:self.fpropertyAction(ipath))
                 menu.addAction(propertyAction)
             #
             elif self.selection and len(self.selection) > 1:
-                propertyAction = QAction("Property", self)
+                propertyAction = QAction(SFMTEXT143, self)
                 propertyAction.triggered.connect(self.fpropertyActionMulti)
                 menu.addAction(propertyAction)
             #
@@ -5439,7 +5459,7 @@ class LView(QBoxLayout):
         ## background
         else:
             if not os.path.exists(self.lvDir):
-                MyDialog("Info", "It doesn't exist.", self.window)
+                MyDialog(SFMINFO, SFMINF14, self.window)
                 return
             self.listview.clearSelection()
             menu = QMenu("Menu", self.listview)
@@ -5455,10 +5475,10 @@ class LView(QBoxLayout):
                 menu.setStyleSheet(csa)
             #
             if self.flag == 1 or self.flag == 3:
-                newFolderAction = QAction("New Folder", self)
+                newFolderAction = QAction(SFMTEXT145, self)
                 newFolderAction.triggered.connect(self.fnewFolderAction)
                 menu.addAction(newFolderAction)
-                newFileAction = QAction("New File", self)
+                newFileAction = QAction(SFMTEXT146, self)
                 newFileAction.triggered.connect(self.fnewFileAction)
                 menu.addAction(newFileAction)
                 #
@@ -5482,7 +5502,7 @@ class LView(QBoxLayout):
                         ii += 2
             #
             if self.flag == 1 or self.flag == 3:
-                pasteNmergeAction = QAction("Paste", self)
+                pasteNmergeAction = QAction(SFMTEXT135, self)
                 pasteNmergeAction.triggered.connect(lambda d:PastenMerge(self.lvDir, -3, "", self.window))
                 menu.addAction(pasteNmergeAction)
                 # check the clipboard for data
@@ -5492,7 +5512,7 @@ class LView(QBoxLayout):
                     pasteNmergeAction.setEnabled(False)
             #
             menu.addSeparator()
-            subm_customAction = menu.addMenu("Actions")
+            subm_customAction = menu.addMenu(SFMTEXT140)
             #
             if len(list_custom_modules) > 0:
                 listActions = []
@@ -5513,11 +5533,11 @@ class LView(QBoxLayout):
                 with open("Bookmarks", "r") as fb:
                     fbdata = fb.readlines()
                 if self.lvDir+"\n" in fbdata:
-                    baction = QAction("Remove Bookmark", self)
+                    baction = QAction(SFMTEXT141, self)
                     baction.triggered.connect(lambda:self.window.unsetBtnBookmarks(self.lvDir))
                     menu.addAction(baction)
                 else:
-                    baction = QAction("Add Bookmark", self)
+                    baction = QAction(SFMTEXT142, self)
                     baction.triggered.connect(lambda:self.window.setBtnBookmarks(self.lvDir))
                     menu.addAction(baction)
             #
@@ -5536,9 +5556,9 @@ class LView(QBoxLayout):
                 try:
                     subprocess.Popen([ret, itemPath])
                 except Exception as E:
-                    MyDialog("Error", str(E), self.window)
+                    MyDialog(SFMERROR, str(E), self.window)
             else:
-                MyDialog("Info", "The program\n"+ret+"\ncannot be found", self.window)
+                MyDialog(SFMINFO, "{}:\n{}".format(SFMTEXT147, ret), self.window)
     
     # copy the template choosen - the rename dialog appears
     def ftemplateAction(self, templateName):
@@ -5557,7 +5577,7 @@ class LView(QBoxLayout):
                     try:
                         shutil.copy(os.path.join(templateDir, templateName), destPath)
                     except Exception as E:
-                        MyDialog("Error", str(E), self.window)
+                        MyDialog(SFMERROR, str(E), self.window)
     
     # launch the application choosen
     def fprogAction(self, iprog, path):
@@ -5574,7 +5594,7 @@ class LView(QBoxLayout):
         if os.access(ldir, os.R_OK):
             self.window.openDir(ldir, flag)
         else:
-            MyDialog("Info", "Cannot open the folder: "+os.path.basename(ldir), self.window)
+            MyDialog(SFMINFO, SFMINF20+os.path.basename(ldir), self.window)
 
     # send to trash the selected items
     def ftrashAction(self):
@@ -5588,9 +5608,9 @@ class LView(QBoxLayout):
                 dialogList = ""
                 for item in list_items:
                     dialogList += os.path.basename(item)+"\n"
-                ret = retDialogBox("Question", "Do you really want to move these items to the trashcan?", "", dialogList, self.window)
+                ret = retDialogBox(SFMQUESTION, SFMQUESTION03, "", dialogList, self.window)
             else:
-                ret = retDialogBox("Question", "Do you really want to move these items to the trashcan?", "", "Too many items.\n", self.window)
+                ret = retDialogBox(SFMQUESTION, SFMQUESTION03, "", SFMTEXT148, self.window)
             #
             if ret.getValue():
                 TrashModule(list_items, self.window)
@@ -5608,9 +5628,9 @@ class LView(QBoxLayout):
                 dialogList = ""
                 for item in list_items:
                     dialogList += os.path.basename(item)+"\n"
-                ret = retDialogBox("Question", "Do you really want to delete these items?", "", dialogList, self.window)
+                ret = retDialogBox(SFMQUESTION, SFMQUESTION04, "", dialogList, self.window)
             else:
-                ret = retDialogBox("Question", "Do you really want to delete these items?", "", "Too many items.\n", self.window)
+                ret = retDialogBox(SFMQUESTION, SFMQUESTION04, "", SFMTEXT148, self.window)
             #
             if ret.getValue():
                 self.fdeleteItems(list_items)
@@ -5641,27 +5661,27 @@ class LView(QBoxLayout):
                     items_skipped += os.path.basename(item)+"\n"+str(E)+"\n\n"
             # not regular files or folders 
             else:
-                items_skipped += os.path.basename(item)+"\n"+"Only files and folders can be deleted."+"\n\n"
+                items_skipped += os.path.basename(item)+"\n"+SFMTEXT149+"\n\n"
         #
         if items_skipped != "":
-            MyMessageBox("Info", "Items not deleted:", "", items_skipped, self.window)
+            MyMessageBox(SFMINFO, SFMINF21, "", items_skipped, self.window)
     
     # create a new folder
     def fnewFolderAction(self):
         if os.access(self.lvDir, os.W_OK): 
-            ret = self.wrename3("New Folder", self.lvDir)
+            ret = self.wrename3(SFMTEXT150, self.lvDir)
             if ret != -1 or not ret:
                 destPath = os.path.join(self.lvDir, ret)
                 if not os.path.exists(destPath):
                     try:
                         os.mkdir(destPath)
                     except Exception as E:
-                        MyDialog("Error", str(E), self.window)
+                        MyDialog(SFMERROR, str(E), self.window)
     
     # 
     def fnewFileAction(self):
         if os.access(self.lvDir, os.W_OK): 
-            ret = self.wrename3("Text file.txt", self.lvDir)
+            ret = self.wrename3(SFMTEXT151, self.lvDir)
             if ret != -1 or not ret:
                 destPath = os.path.join(self.lvDir, ret)
                 if not os.path.exists(destPath):
@@ -5669,7 +5689,7 @@ class LView(QBoxLayout):
                         iitem = open(destPath,'w')
                         iitem.close()
                     except Exception as E:
-                        MyDialog("Error", str(E), self.window)
+                        MyDialog(SFMERROR, str(E), self.window)
         
     # new file or folder
     def wrename3(self, ditem, dest_path):
@@ -5691,7 +5711,7 @@ class LView(QBoxLayout):
             try:
                 shutil.move(ipath, inew_name)
             except Exception as E:
-                MyDialog("Error", str(E), self.window)
+                MyDialog(SFMERROR, str(E), self.window)
     
     
     def fpropertyAction(self, ipath):
@@ -5801,7 +5821,7 @@ class LView(QBoxLayout):
             path = os.path.dirname(self.lvDir)
             # the path can be unreadable for any reasons
             if not os.access(path, os.R_OK):
-                MyDialog("Error", "The folder\n"+path+"\nis not readable anymore.", self.window)
+                MyDialog(SFMERROR, "{}:\n{}".format(SFMTEXT152, path), self.window)
                 return
             # check for an existent directory
             while not os.path.exists(path):
@@ -5849,14 +5869,14 @@ class LView(QBoxLayout):
             self.fileModel.setFilter(QDir.Filter.AllDirs | QDir.Filter.Files | QDir.Filter.NoDotAndDotDot | QDir.Filter.System | QDir.Filter.Hidden)
             # self.fmf = 1
             self.listview.scrollToTop()
-            self.sender().setToolTip("Hide the hidden Items")
+            self.sender().setToolTip(SFMTEXT153)
         else:
             self.listview.clearSelection()
             #
             self.fileModel.setFilter(QDir.Filter.AllDirs | QDir.Filter.Files | QDir.Filter.NoDotAndDotDot | QDir.Filter.System)
             # self.fmf = 0
             self.listview.scrollToTop()
-            self.sender().setToolTip("Show the hidden Items")
+            self.sender().setToolTip(SFMTEXT154)
             
 
 ###########################
@@ -6003,7 +6023,7 @@ class getAppsByMime():
                                     listPrograms.append(temp_list)
                         
                         except Exception as E:
-                            MyDialog("Error", str(E), self.window)
+                            MyDialog(SFMERROR, str(E), self.window)
         # 
         # from the lAdded list
         for idesktop in lAdded:
@@ -6199,7 +6219,7 @@ class getDefaultApp():
                                 # return applicationPath
                                 return applicationName2
                             else:
-                                MyDialog("Info", "{} cannot be found".format(applicationPath), None)
+                                MyDialog(SFMINFO, "{} {}".format(applicationPath, SFMTEXT208), None)
                         else:
                             return "None"
                 #
@@ -6209,7 +6229,7 @@ class getDefaultApp():
                 return "None"
         #
         else:
-            MyDialog("Error", "xdg-mime cannot be found", None)
+            MyDialog(SFMERROR, SFMERROR14, None)
         
     # function that found the default program for the given mimetype
     def defaultApplication2(self, mimetype):
@@ -6344,11 +6364,11 @@ class openTrash(QBoxLayout):
         layout = QFormLayout()
         layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
         #
-        self.label1 = QLabel("<i>Name</i>")
-        self.label2 = QLabel("<i>Origin</i>")
-        self.label3 = QLabel("<i>Deletion date</i>")
-        self.label4 = QLabel("<i>Type</i>")
-        self.label5 = QLabel("<i>Size</i>")
+        self.label1 = QLabel(SFMTEXT160)
+        self.label2 = QLabel(SFMTEXT161)
+        self.label3 = QLabel(SFMTEXT162)
+        self.label4 = QLabel(SFMTEXT163)
+        self.label5 = QLabel(SFMTEXT164)
         self.label6 = clabel()
         self.label7 = clabel()
         self.label8 = QLabel("")
@@ -6367,17 +6387,17 @@ class openTrash(QBoxLayout):
         obox.insertLayout(1, box2, 0)
         #
         button1 = QPushButton("R")
-        button1.setToolTip("Restore the selected items")
+        button1.setToolTip(SFMTEXT165)
         button1.clicked.connect(self.ftbutton1)
         box2.addWidget(button1)
         # 
         button2 = QPushButton("D")
-        button2.setToolTip("Delete the selected items")
+        button2.setToolTip(SFMTEXT166)
         button2.clicked.connect(self.ftbutton2)
         box2.addWidget(button2)
         #
         button3 = QPushButton("E")
-        button3.setToolTip("Empty the Recycle Bin")
+        button3.setToolTip(SFMTEXT167)
         button3.clicked.connect(self.ftbutton3)
         box2.addWidget(button3)
         #
@@ -6385,7 +6405,7 @@ class openTrash(QBoxLayout):
             ttag = "Home"
         else:
             ttag = os.path.basename(str(self.tdir))
-        self.window.mtab.addTab(page, "Recycle Bin - {}".format(ttag))
+        self.window.mtab.addTab(page, "{} - {}".format(SFMTEXT168, ttag))
         page.setLayout(self)
         self.window.mtab.setCurrentIndex(self.window.mtab.count()-1)
         # populate the QListView model
@@ -6395,10 +6415,10 @@ class openTrash(QBoxLayout):
     def popTrash(self):
         llista = trash_module.ReadTrash(self.tdir).return_the_list()
         if llista == -2:
-            MyDialog("Info", "The trash directory and its subfolders have some problem.", self.window)
+            MyDialog(SFMINFO, SFMINF23, self.window)
             return
         if llista == -1:
-            MyDialog("Info", "Got some problem during the reading of the trashed items.\nSolve the issue manually.", self.window)
+            MyDialog(SFMINFO, SFMINF24, self.window)
             return
         if llista != -1:
             for item in llista:
@@ -6448,7 +6468,7 @@ class openTrash(QBoxLayout):
                         self.model.appendRow(item)
                         self.list_trashed_items.append(fake_name+".trashinfo")
                 except Exception as E:
-                    MyDialog("Error", str(E), self.window)
+                    MyDialog(SFMERROR, str(E), self.window)
         #
         elif len(updated_list) < len(self.list_trashed_items):
             item_deleted = [x for x in self.list_trashed_items if x not in updated_list]
@@ -6501,10 +6521,10 @@ class openTrash(QBoxLayout):
             #
             ret = trash_module.RestoreTrash(self.tdir, restore_items).itemsRestore()
             if ret == -2:
-                MyDialog("Error", "The items cannot be restored.\nDo it manually.", self.window)
+                MyDialog(SFMERROR, SFMERROR15, self.window)
                 return
             if ret != [1,-1]:
-                MyDialog("Info", ret, self.window)
+                MyDialog(SFMINFO, ret, self.window)
             else:
                 self.model.removeRow(index.row())
                 self.label6.setText("", self.window.size().width())
@@ -6535,11 +6555,11 @@ class openTrash(QBoxLayout):
             #
             ret = trash_module.deleteTrash(self.tdir, restore_items).itemsDelete()
             if ret == -2:
-                MyDialog("Info", "The items cannot be deleted.\nDo it manually.", self.window)
+                MyDialog(SFMINFO, SFMINF25, self.window)
                 return
             #
             if ret != [1,-1]:
-                MyDialog("Info", ret, self.window)
+                MyDialog(SFMINFO, ret, self.window)
             else:
                 self.model.removeRow(index.row())
                 self.label6.setText("", self.window.size().width())
@@ -6553,7 +6573,7 @@ class openTrash(QBoxLayout):
     def ftbutton3(self):
         ret = trash_module.emptyTrash(self.tdir).tempty()
         if ret == -2:
-            MyDialog("Info", "The Recycle Bin cannot be empty.\nDo it manually.", self.window)
+            MyDialog(SFMINFO, SFMINF26, self.window)
             return
         self.model.clear()
         self.label6.setText("", self.window.size().width())
@@ -6563,7 +6583,7 @@ class openTrash(QBoxLayout):
         self.label9.setText("", self.window.size().width())
         self.label10.setText("")
         if ret == -1:
-            MyDialog("Info", "Error with some files in the Recycle Bin.\nTry to remove them manually.", self.window)
+            MyDialog(SFMINFO, SFMINF27, self.window)
     
     # single click on item
     def flist(self, index):
@@ -6586,17 +6606,17 @@ class openTrash(QBoxLayout):
         self.label9.setText(imime.name(), self.window.size().width())
         #
         if not os.path.exists(fpath):
-            self.label10.setText("(Broken Link)")
+            self.label10.setText(SFMTEXT26)
         elif os.path.isfile(fpath):
             if os.access(fpath, os.R_OK):
                 self.label10.setText(convert_size(QFileInfo(fpath).size()))
             else:
-                self.label10.setText("(Not readable)")
+                self.label10.setText(SFMTEXT28)
         elif os.path.isdir(fpath):
             if os.access(fpath, os.R_OK):
                 self.label10.setText(convert_size(folder_size(fpath)))
             else:
-                self.label10.setText("(Not readable)")
+                self.label10.setText(SFMTEXT28)
     
     # double click on item
     def flist2(self, index):
@@ -6609,23 +6629,23 @@ class openTrash(QBoxLayout):
                 try:
                     self.window.openDir(path, 0)
                 except Exception as E:
-                    MyDialog("Error", str(E), self.window)
+                    MyDialog(SFMERROR, str(E), self.window)
             else:
-                MyDialog("Info", path+"\n\n   Not readable", self.window)
+                MyDialog(SFMINFO, path+SFMTEXT113, self.window)
         elif os.path.isfile(path):
             perms = QFileInfo(path).permissions()
             # can be execute
             if perms & QFile.Permission.ExeOwner:
-                MyDialog("Info", "Cannot execute this file.", self.window)
+                MyDialog(SFMINFO, SFMINF16, self.window)
                 return
                 # imime = QMimeDatabase().mimeTypeForFile(path, QMimeDatabase.MatchMode.MatchDefault).name()
                 # #
                 # if imime == "application/x-desktop":
-                    # MyDialog("Info", "Cannot execute this file.", self.window)
+                    # MyDialog(SFMINFO, SFMINF16, self.window)
                     # return
                 # #
                 # if imime == "application/x-sharedlib":
-                    # MyDialog("Info", "This is a binary file.", self.window)
+                    # MyDialog(SFMINFO, SFMINF29, self.window)
                     # return
                 # else:
                     # ret = execfileDialog(path, 3, self.window).getValue()
@@ -6633,7 +6653,7 @@ class openTrash(QBoxLayout):
                     # try:
                         # subprocess.Popen(path, shell=True)
                     # except Exception as E:
-                        # MyDialog("Error", str(E), self.window)
+                        # MyDialog(SFMERROR, str(E), self.window)
                     # finally:
                         # return
                 # elif ret == -1:
@@ -6687,7 +6707,7 @@ class openTrash(QBoxLayout):
             # else:
                 # subprocess.Popen(r_defApp)
         # except Exception as E:
-            # MyDialog("Error", str(E), self.window)
+            # MyDialog(SFMERROR, str(E), self.window)
     
     
     # show a menu
@@ -6720,7 +6740,7 @@ class openTrash(QBoxLayout):
                 menu.setStyleSheet(csa)
             Tpath = trash_module.mountPoint(self.tdir).find_trash_path()
             if os.path.isfile(os.path.join(Tpath, "files", itemName)):
-                subm_openwithAction= menu.addMenu("Open with...")
+                subm_openwithAction= menu.addMenu(SFMTEXT131)
                 listPrograms = getAppsByMime(os.path.join(Tpath, "files", itemName)).appByMime()
                 #
                 ii = 0
@@ -6740,16 +6760,16 @@ class openTrash(QBoxLayout):
                         #
                         if iprog[0] == defApp:
                             # progActionList.insert(0, QAction("{} - {} (Default)".format(os.path.basename(iprog), listPrograms[ii+1]), self))
-                            prog_str = "{} (Default)".format(iprog[1])
+                            prog_str = "{} {}".format(iprog[1], SFMTEXT205)
                             if USE_TERM:
-                                prog_str = "{} (Default - terminal)".format(iprog[1])
+                                prog_str = "{} {}".format(iprog[1], SFMTEXT206)
                             progActionList.insert(0, QAction(prog_str, self))
                             progActionList.insert(1, iprog)
                         else:
                             # progActionList.append(QAction("{} - {}".format(os.path.basename(iprog), listPrograms[ii+1]), self))
                             prog_str = "{}".format(iprog[1])
                             if USE_TERM:
-                                prog_str = "{} (terminal)".format(iprog[1])
+                                prog_str = "{} {}".format(iprog[1], SFMTEXT207)
                             progActionList.append(QAction(prog_str, self))
                             progActionList.append(iprog)
                         ii += 2
@@ -6760,7 +6780,7 @@ class openTrash(QBoxLayout):
                         subm_openwithAction.addAction(paction)
                         ii += 2
                 subm_openwithAction.addSeparator()
-                otherAction = QAction("Other Program")
+                otherAction = QAction(SFMTEXT132)
                 otherAction.triggered.connect(lambda:self.fotherAction(os.path.join(Tpath, "files", itemName)))
                 subm_openwithAction.addAction(otherAction)
             #
@@ -6788,9 +6808,9 @@ class openTrash(QBoxLayout):
                 try:
                     subprocess.Popen([ret, itemPath])
                 except Exception as E:
-                    MyDialog("Error", str(E), self.window)
+                    MyDialog(SFMERROR, str(E), self.window)
             else:
-                MyDialog("Info", "The program\n"+ret+"\ncannot be found", self.window)
+                MyDialog(SFMINFO, "{}:\n{}".format(SFMTEXT147, ret), self.window)
 
 
 
@@ -6837,19 +6857,19 @@ class TrashModule():
                     os.mkdir(self.Tinfo, 0o700)
                     self.can_trash = 1
                 except Exception as E:
-                    MyDialog("Error", str(E), self.window)
+                    MyDialog(SFMERROR, str(E), self.window)
                     return
                 finally:
                     return
             else:
-                MyDialog("Info", "Cannot create the Trash folder.", self.window)
+                MyDialog(SFMINFO, SFMINF30, self.window)
                 return
         #
         if not os.access(self.Tfiles, os.W_OK):
-            MyDialog("Info", "Cannot create the files folder.", self.window)
+            MyDialog(SFMINFO, SFMINF31, self.window)
             return
         if not os.access(self.Tinfo, os.W_OK):
-            MyDialog("Info", "Cannot create the info folder.", self.window)
+            MyDialog(SFMINFO, SFMINF32, self.window)
             return
         #
         if os.access(self.trash_path, os.W_OK):
@@ -6857,21 +6877,21 @@ class TrashModule():
                 try:
                     os.mkdir(self.Tfiles, 0o700)
                 except Exception as E:
-                    MyDialog("Error", str(E), self.window)
+                    MyDialog(SFMERROR, str(E), self.window)
                     return
             #
             if not os.path.exists(self.Tinfo):
                 try:
                     os.mkdir(self.Tinfo, 0o700)
                 except Exception as E:
-                    MyDialog("Error", str(E), self.window)
+                    MyDialog(SFMERROR, str(E), self.window)
                     return
             #
             self.can_trash = 1
             return
         #
         else:
-            MyDialog("Info", "The Trash folder has wrong permissions.", self.window)
+            MyDialog(SFMINFO, SFMINF33, self.window)
             return
         
     def Tcan_trash(self, list_items):
@@ -6893,7 +6913,7 @@ class TrashModule():
             try:
                 shutil.move(item_path, os.path.join(self.Tfiles, item))
             except Exception as E:
-                MyDialog("Error", str(E), self.window)
+                MyDialog(SFMERROR, str(E), self.window)
                 continue
             ifile = open(os.path.join(self.Tinfo, "{}.trashinfo".format(item)),"w")
             ifile.write("[Trash Info]\n")
@@ -7102,7 +7122,7 @@ class cTView(QBoxLayout):
         path = self.tmodel.fileInfo(index).absoluteFilePath()
         #
         if not os.path.exists(path):
-            MyDialog("Info", "It doesn't exist.", self.window)
+            MyDialog(SFMINFO, SFMINF14, self.window)
             return
         #
         if os.path.isdir(path):
@@ -7116,15 +7136,15 @@ class cTView(QBoxLayout):
                     # scroll to top
                     self.tview.verticalScrollBar().setValue(0)
                 except Exception as E:
-                    MyDialog("Error", str(E), self.window)
+                    MyDialog(SFMERROR, str(E), self.window)
             else:
-                MyDialog("Info", path+"\n\n   Not readable", self.window)
+                MyDialog(SFMINFO, path+SFMTEXT113, self.window)
         elif os.path.isfile(path):
             perms = QFileInfo(path).permissions()
             if perms & QFile.Permission.ExeOwner:
                 imime = QMimeDatabase().mimeTypeForFile(path, QMimeDatabase.MatchMode.MatchDefault).name()
                 if imime == "application/x-desktop":
-                    MyDialog("Info", "Cannot execute this file.", self.window)
+                    MyDialog(SFMINFO, SFMINF16, self.window)
                     return
                 if imime == "application/x-sharedlib":
                     ret = execfileDialog(path, 1, self.window).getValue()
@@ -7135,7 +7155,7 @@ class cTView(QBoxLayout):
                     try:
                         subprocess.Popen(path, shell=False, cwd=os.path.dirname(path))
                     except Exception as E:
-                        MyDialog("Error", str(E), self.window)
+                        MyDialog(SFMERROR, str(E), self.window)
                     finally:
                         return
                 elif ret == -1:
@@ -7163,7 +7183,7 @@ class cTView(QBoxLayout):
                 # self._flaunch_prog(r_defApp, path, USE_TERM)
                 _flaunch_prog(r_defApp, path, USE_TERM)
             else:
-                MyDialog("Info", "No programs found.", self.window)
+                MyDialog(SFMINFO, SFMINF19, self.window)
     
     # # function for executing the command
     # def _flaunch_prog(self, r_defApp, path, USE_TERM):
@@ -7191,7 +7211,7 @@ class cTView(QBoxLayout):
             # else:
                 # subprocess.Popen(r_defApp)
         # except Exception as E:
-            # MyDialog("Error", str(E), self.window)
+            # MyDialog(SFMERROR, str(E), self.window)
     
     
     #  send to trash or delete the selected items - function
@@ -7229,7 +7249,7 @@ class cTView(QBoxLayout):
             itemName = self.tmodel.data(pointedItem2, Qt.ItemDataRole.DisplayRole)
             #
             if not os.path.exists(os.path.join(self.lvDir, itemName)):
-                MyDialog("Info", "It doesn't exist.", self.window)
+                MyDialog(SFMINFO, SFMINF14, self.window)
                 return
             #
             menu = QMenu("Menu", self.tview)
@@ -7247,7 +7267,7 @@ class cTView(QBoxLayout):
             if self.selection != None:
                 if len(self.selection) == 1:
                     if os.path.isfile(os.path.join(self.lvDir, itemName)):
-                        subm_openwithAction= menu.addMenu("Open with...")
+                        subm_openwithAction= menu.addMenu(SFMTEXT131)
                         listPrograms = getAppsByMime(os.path.join(self.lvDir, itemName)).appByMime()
                         ii = 0
                         defApp = getDefaultApp(os.path.join(self.lvDir, itemName)).defaultApplication()
@@ -7267,16 +7287,16 @@ class cTView(QBoxLayout):
                                 # if iprog == r_defApp:
                                 if iprog[0] == defApp:
                                     # progActionList.insert(0, QAction("{} - {} (Default)".format(os.path.basename(iprog), listPrograms[ii+1]), self))
-                                    prog_str = "{} (Default)".format(iprog[1])
+                                    prog_str = "{} {}".format(iprog[1], SFMTEXT205)
                                     if USE_TERM:
-                                        prog_str = "{} (Default - terminal)".format(iprog[1])
+                                        prog_str = "{} {}".format(iprog[1], SFMTEXT206)
                                     progActionList.insert(0, QAction(prog_str, self))
                                     progActionList.insert(1, iprog)
                                 else:
                                     # progActionList.append(QAction("{} - {}".format(os.path.basename(iprog), listPrograms[ii+1]), self))
                                     prog_str = "{}".format(iprog[1])
                                     if USE_TERM:
-                                        prog_str = "{} (terminal)".format(iprog[1])
+                                        prog_str = "{} {}".format(iprog[1], SFMTEXT207)
                                     progActionList.append(QAction(prog_str, self))
                                     progActionList.append(iprog)
                                 ii += 2
@@ -7286,23 +7306,23 @@ class cTView(QBoxLayout):
                                 subm_openwithAction.addAction(paction)
                                 ii += 2
                         subm_openwithAction.addSeparator()
-                        otherAction = QAction("Other Program")
+                        otherAction = QAction(SFMTEXT132)
                         otherAction.triggered.connect(lambda:self.fotherAction(os.path.join(self.lvDir, itemName)))
                         subm_openwithAction.addAction(otherAction)
                         #
                         menu.addSeparator()
                     elif os.path.isdir(os.path.join(self.lvDir, itemName)):
-                        newtabAction = QAction("Open in a new tab")
+                        newtabAction = QAction(SFMTEXT133)
                         newtabAction.triggered.connect(lambda:self.fnewtabAction(os.path.join(self.lvDir, itemName), self.flag))
                         menu.addAction(newtabAction)
                         menu.addSeparator()
             #
             menu.addSeparator()
             if self.flag == 1 or self.flag == 3:
-                newFolderAction = QAction("New Folder", self)
+                newFolderAction = QAction(SFMTEXT145, self)
                 newFolderAction.triggered.connect(self.fnewFolderAction)
                 menu.addAction(newFolderAction)
-                newFileAction = QAction("New File", self)
+                newFileAction = QAction(SFMTEXT146, self)
                 newFileAction.triggered.connect(self.fnewFileAction)
                 menu.addAction(newFileAction)
                 #
@@ -7326,17 +7346,17 @@ class cTView(QBoxLayout):
                         ii += 2
             #
             menu.addSeparator()
-            copyAction = QAction("Copy", self)
+            copyAction = QAction(SFMTEXT136, self)
             copyAction.triggered.connect(lambda:self.fcopycutAction("copy"))
             menu.addAction(copyAction)
             #
             if self.flag == 1 or self.flag == 3:
-                copyAction = QAction("Cut", self)
+                copyAction = QAction(SFMTEXT134, self)
                 copyAction.triggered.connect(lambda:self.fcopycutAction("cut"))
                 menu.addAction(copyAction)
             #
             if self.flag == 1 or self.flag == 3:
-                pasteNmergeAction = QAction("Paste", self)
+                pasteNmergeAction = QAction(SFMTEXT135, self)
                 pasteNmergeAction.triggered.connect(lambda d:PastenMerge(self.lvDir, -3, "", self.window))
                 menu.addAction(pasteNmergeAction)
                 # check the clipboard for data
@@ -7353,26 +7373,26 @@ class cTView(QBoxLayout):
                 if self.lvDir[0:len_home] == os.path.expanduser("~") or self.flag in [3,4]:
                     if self.flag == 1 or self.flag == 3:
                         if isXDGDATAHOME:
-                            trashAction = QAction("Trash", self)
+                            trashAction = QAction(SFMTEXT137, self)
                             trashAction.triggered.connect(self.ftrashAction)
                             menu.addAction(trashAction)
             # delete function
             if USE_DELETE:
                 if self.flag == 1 or self.flag == 3:
-                    deleteAction = QAction("Delete", self)
+                    deleteAction = QAction(SFMTEXT138, self)
                     deleteAction.triggered.connect(self.fdeleteAction)
                     menu.addAction(deleteAction)
             #
             if self.flag == 1 or self.flag == 3:
                 if self.selection and len(self.selection) == 1:
                     menu.addSeparator()
-                    renameAction = QAction("Rename", self)
+                    renameAction = QAction(SFMTEXT139, self)
                     ipath = self.tmodel.fileInfo(self.selection[0]).absoluteFilePath()
                     renameAction.triggered.connect(lambda:self.frenameAction(ipath))
                     menu.addAction(renameAction)
             #
             menu.addSeparator()
-            subm_customAction = menu.addMenu("Actions")
+            subm_customAction = menu.addMenu(SFMTEXT140)
             #
             if len(list_custom_modules) > 0:
                 listActions = []
@@ -7405,11 +7425,11 @@ class cTView(QBoxLayout):
             #
             menu.addSeparator()
             # upButton
-            upAction = QAction("Go Up", self)
+            upAction = QAction(SFMTEXT169, self)
             upAction.triggered.connect(self.upButton)
             menu.addAction(upAction)
             # show the hidden items
-            hiddenAction = QAction("Hidden items", self)
+            hiddenAction = QAction(SFMTEXT170, self)
             hiddenAction.triggered.connect(self.fhidbtn)
             menu.addAction(hiddenAction)
             #
@@ -7417,12 +7437,12 @@ class cTView(QBoxLayout):
             if self.selection and len(self.selection) == 1:
                 ipath = self.tmodel.fileInfo(self.selection[0]).absoluteFilePath()
                 if os.path.exists(ipath):
-                    propertyAction = QAction("Property", self)
+                    propertyAction = QAction(SFMTEXT143, self)
                     propertyAction.triggered.connect(lambda:self.fpropertyAction(ipath))
                     menu.addAction(propertyAction)
             #
             elif self.selection and len(self.selection) > 1:
-                propertyAction = QAction("Property", self)
+                propertyAction = QAction(SFMTEXT143, self)
                 propertyAction.triggered.connect(self.fpropertyActionMulti)
                 menu.addAction(propertyAction)
             #
@@ -7442,10 +7462,10 @@ class cTView(QBoxLayout):
                 menu.setStyleSheet(csa)
             #
             if self.flag == 1 or self.flag == 3:
-                newFolderAction = QAction("New Folder", self)
+                newFolderAction = QAction(SFMTEXT145, self)
                 newFolderAction.triggered.connect(self.fnewFolderAction)
                 menu.addAction(newFolderAction)
-                newFileAction = QAction("New File", self)
+                newFileAction = QAction(SFMTEXT146, self)
                 newFileAction.triggered.connect(self.fnewFileAction)
                 menu.addAction(newFileAction)
                 #
@@ -7470,7 +7490,7 @@ class cTView(QBoxLayout):
                 #
                 menu.addSeparator()
                 # paste operation
-                pasteNmergeAction = QAction("Paste", self)
+                pasteNmergeAction = QAction(SFMTEXT135, self)
                 pasteNmergeAction.triggered.connect(lambda d:PastenMerge(self.lvDir, -3, "", self.window))
                 menu.addAction(pasteNmergeAction)
                 # check the clipboard for data
@@ -7481,7 +7501,7 @@ class cTView(QBoxLayout):
             #
             menu.addSeparator()
             #
-            subm_customAction = menu.addMenu("Actions")
+            subm_customAction = menu.addMenu(SFMTEXT140)
             #
             if len(list_custom_modules) > 0:
                 listActions = []
@@ -7519,11 +7539,11 @@ class cTView(QBoxLayout):
             #
             menu.addSeparator()
             # upButton
-            upAction = QAction("Go Up", self)
+            upAction = QAction(SFMTEXT169, self)
             upAction.triggered.connect(self.upButton)
             menu.addAction(upAction)
             # show the hidden items
-            hiddenAction = QAction("Hidden items", self)
+            hiddenAction = QAction(SFMTEXT170, self)
             hiddenAction.triggered.connect(self.fhidbtn)
             menu.addAction(hiddenAction)
             #
@@ -7541,18 +7561,18 @@ class cTView(QBoxLayout):
     
     def fnewFolderAction(self):
         if os.access(self.lvDir, os.W_OK): 
-            ret = self.wrename3("New Folder", self.lvDir)
+            ret = self.wrename3(SFMTEXT150, self.lvDir)
             if ret != -1 or not ret:
                 destPath = os.path.join(self.lvDir, ret)
                 if not os.path.exists(destPath):
                     try:
                         os.mkdir(destPath)
                     except Exception as E:
-                        MyDialog("Error", str(E), self.window)
+                        MyDialog(SFMERROR, str(E), self.window)
     
     def fnewFileAction(self):
         if os.access(self.lvDir, os.W_OK): 
-            ret = self.wrename3("Text file.txt", self.lvDir)
+            ret = self.wrename3(SFMTEXT151, self.lvDir)
             if ret != -1 or not ret:
                 destPath = os.path.join(self.lvDir, ret)
                 if not os.path.exists(destPath):
@@ -7560,7 +7580,7 @@ class cTView(QBoxLayout):
                         iitem = open(destPath,'w')
                         iitem.close()
                     except Exception as E:
-                        MyDialog("Error", str(E), self.window)
+                        MyDialog(SFMERROR, str(E), self.window)
     
     def ftemplateAction(self, templateName):
         templateDir = None
@@ -7578,7 +7598,7 @@ class cTView(QBoxLayout):
                     try:
                         shutil.copy(os.path.join(templateDir, templateName), destPath)
                     except Exception as E:
-                        MyDialog("Error", str(E), self.window)
+                        MyDialog(SFMERROR, str(E), self.window)
     
     # new file or folder
     def wrename3(self, ditem, dest_path):
@@ -7604,9 +7624,9 @@ class cTView(QBoxLayout):
                 try:
                     subprocess.Popen([ret, itemPath])
                 except Exception as E:
-                    MyDialog("Error", str(E), self.window)
+                    MyDialog(SFMERROR, str(E), self.window)
             else:
-                MyDialog("Info", "The program\n"+ret+"\ncannot be found", self.window)
+                MyDialog(SFMINFO, "{}:\n{}".format(SFMTEXT147, ret), self.window)
 
     #
     def fcopycutAction(self, action):
@@ -7651,9 +7671,9 @@ class cTView(QBoxLayout):
                 dialogList = ""
                 for item in list_items:
                     dialogList += os.path.basename(item)+"\n"
-                ret = retDialogBox("Question", "Do you really want to move these items to the trashcan?", "", dialogList, self.window)
+                ret = retDialogBox(SFMQUESTION, SFMQUESTION05, "", dialogList, self.window)
             else:
-                ret = retDialogBox("Question", "Do you really want to move these items to the trashcan?", "", "Too many items.\n", self.window)
+                ret = retDialogBox(SFMQUESTION, SFMQUESTION05, "", SFMTEXT148, self.window)
             #
             if ret.getValue():
                 TrashModule(list_items, self.window)
@@ -7671,9 +7691,9 @@ class cTView(QBoxLayout):
                 dialogList = ""
                 for item in list_items:
                     dialogList += os.path.basename(item)+"\n"
-                ret = retDialogBox("Question", "Do you really want to delete these items?", "", dialogList, self.window)
+                ret = retDialogBox(SFMQUESTION, SFMQUESTION04, "", dialogList, self.window)
             else:
-                ret = retDialogBox("Question", "Do you really want to delete these items?", "", "Too many items.\n", self.window)
+                ret = retDialogBox(SFMQUESTION, SFMQUESTION04, "", SFMQUESTION06, self.window)
             #
             if ret.getValue():
                 self.fdeleteItems(list_items)
@@ -7703,10 +7723,10 @@ class cTView(QBoxLayout):
                     items_skipped += os.path.basename(item)+"\n"+str(E)+"\n\n"
             # not regular files or folders 
             else:
-                items_skipped += os.path.basename(item)+"\n"+"Only files and folders can be deleted."+"\n\n"
+                items_skipped += os.path.basename(item)+"\n"+SFMTEXT149+"\n\n"
         #
         if items_skipped != "":
-            MyMessageBox("Info", "Items not deleted:", "", items_skipped, self.window)
+            MyMessageBox(SFMINFO, SFMINF21, "", items_skipped, self.window)
 
     
     def wrename2(self, ditem, dest_path):
@@ -7728,7 +7748,7 @@ class cTView(QBoxLayout):
             try:
                 shutil.move(ipath, inew_name)
             except Exception as E:
-                MyDialog("Error", str(E), self.window)
+                MyDialog(SFMERROR, str(E), self.window)
 
     def ficustomAction(self, el, menuType):
         if menuType == 1:
@@ -7791,7 +7811,7 @@ class cTView(QBoxLayout):
             path = os.path.dirname(self.lvDir)
             # the path can be unreadable for any reasons
             if not os.access(path, os.R_OK):
-                MyDialog("Error", "The folder\n"+path+"\nis not readable anymore.", self.window)
+                MyDialog(SFMERROR, "{}:\n{}".format(SFMTEXT152, path), self.window)
                 return
             # check for an existent directory
             while not os.path.exists(path):
