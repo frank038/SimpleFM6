@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# version 1.6.20
+# version 1.6.21
 from sfmlang import *
 from PyQt6.QtCore import (QTimer,QModelIndex,QFileSystemWatcher,QEvent,QObject,QUrl,QFileInfo,QRect,QStorageInfo,QMimeData,QMimeDatabase,QFile,QThread,Qt,pyqtSignal,QSize,QMargins,QDir,QByteArray,QItemSelection,QItemSelectionModel,QPoint)
 from PyQt6.QtWidgets import (QStyleFactory, QTreeWidget,QTreeWidgetItem,QLayout,QHBoxLayout,QHeaderView,QTreeView,QSpacerItem,QScrollArea,QTextEdit,QSizePolicy,QBoxLayout,QLabel,QPushButton,QApplication,QDialog,QGridLayout,QMessageBox,QLineEdit,QTabWidget,QWidget,QGroupBox,QComboBox,QCheckBox,QProgressBar,QListView,QItemDelegate,QStyle,QFileIconProvider,QAbstractItemView,QFormLayout,QMenu)
@@ -3523,7 +3523,7 @@ class MainWin(QWidget):
                     except Exception as E:
                         MyDialog(SFMERROR, str(E), self)
         ####
-        # for closing open tabs
+        # for closing open tabs: list of [device,mount_point] e.g. ["/dev/sda","/mnt"]
         self.device_mountPoint = []
         #
         parg = ""
@@ -3556,6 +3556,15 @@ class MainWin(QWidget):
             ret = self.open_device(ret_mountpoint, ddevice)
             if ret == "N" or ret == None:
                 self.openDir(HOME, 1)
+            else:
+                _found = 0
+                for el in self.device_mountPoint:
+                    if el[0] == ddevice:
+                        _found = 1
+                        break
+                if _found == 1:
+                    _d = [ddevice, ret_mountpoint]
+                    self.device_mountPoint.append(_d)
         else:
             # "//" is not a directory
             if len(parg) > 1 and parg.strip("/") == "":
@@ -3587,8 +3596,30 @@ class MainWin(QWidget):
         self.tbtn.setIcon(trash_icon)
     
     
-    # add a new connected device
+    # add a new connected device - or a removed/unmounted device
     def device_added_callback(self, *args):
+        if "org.freedesktop.UDisks2.Job" in args[1]:
+            _dd2 = args[1]["org.freedesktop.UDisks2.Job"]
+            _device_operation = None
+            _device_to_close_tab = None
+            for k,v in _dd2.items():
+                if k == "Operation" and v == "filesystem-unmount":
+                    _device_operation = v
+                if k == "Objects":
+                    _device_to_close_tab = str(v[0])
+            #
+            if _device_operation and _device_to_close_tab:
+                bd = self.bus.get_object('org.freedesktop.UDisks2', _device_to_close_tab)
+                pdevice = bd.Get('org.freedesktop.UDisks2.Block', 'Device', dbus_interface='org.freedesktop.DBus.Properties')
+                ddevice = bytearray(pdevice).replace(b'\x00', b'').decode('utf-8')
+                #
+                _found_mount = ""
+                for el in self.device_mountPoint:
+                    if el[0] == ddevice:
+                        _found_mount = el[1]
+                if _found_mount != "":
+                    self.close_open_tab(_found_mount)
+        #
         for k in args[1]:
             kk = "org.freedesktop.UDisks2.Filesystem"
             if k == kk:
@@ -3611,7 +3642,7 @@ class MainWin(QWidget):
                                 for el in self.device_mountPoint[:]:
                                     if el[0] == item.menu().device:
                                         self.close_open_tab(el[1])
-                                        self.device_mountPoint.remove(el)
+                                        # self.device_mountPoint.remove(el)
                                 break
                 
     
@@ -3775,6 +3806,11 @@ class MainWin(QWidget):
             if self.mtab.tabToolTip(i)[0:len(mountpoint)] == mountpoint:
                 self.mtab.widget(i).deleteLater()
                 self.mtab.removeTab(i)
+                #
+                for el in self.device_mountPoint[:]:
+                    if el[1] == mountpoint:
+                        self.device_mountPoint.remove(el)
+                        break
         #
         num_tabs = self.mtab.count()
         # open one tab if any
